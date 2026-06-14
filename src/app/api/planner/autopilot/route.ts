@@ -68,8 +68,8 @@ export async function POST(req: Request) {
       filteredRecipes = allRecipes;
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("sk-ant-api-placeholder-keys") || !apiKey.startsWith("sk-ant-");
+    const apiKey = process.env.GEMINI_API_KEY;
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("gemini-placeholder") || (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ."));
 
     const plannedList: any[] = [];
 
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       // ── SMART FALLBACK RECOMMENDATION ALGORITHM ──
       // Populate dates one by one with randomized selections matching their targets
       for (const dStr of dateStrings) {
-        const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack"];
+        const mealTypes = ["Breakfast", "Lunch", "Dinner"];
         for (const type of mealTypes) {
           // Select recipe (prefer saved recipes if they match)
           let candidates = filteredRecipes;
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
         }
       }
     } else {
-      // ── CLAUDE AI AUTOPILOT GENERATOR ──
+      // ── GEMINI AI AUTOPILOT GENERATOR ──
       const systemPrompt = `You are a nutrition planning AI. Create a 7-day meal plan from the following list of recipe IDs:
       ${filteredRecipes.map((r) => `ID: ${r.id} | Title: ${r.title} | Cals: ${r.calories} | Protein: ${r.protein} | Diets: ${r.diets}`).join("\n")}
       
@@ -126,28 +126,27 @@ export async function POST(req: Request) {
       
       Return ONLY a JSON array of objects structured as:
       [
-        { "date": "YYYY-MM-DD", "mealType": "Breakfast"|"Lunch"|"Dinner"|"Snack", "recipeId": "string" }
-      ]
-      No markdown formatting, no comments, just the raw JSON.`;
+        { "date": "YYYY-MM-DD", "mealType": "Breakfast"|"Lunch"|"Dinner", "recipeId": "string" }
+      ]`;
 
       try {
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const response = await fetch(url, {
           method: "POST",
           headers: {
-            "x-api-key": apiKey,
-            "anthropic-version": "2023-06-01",
-            "content-type": "application/json",
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            model: "claude-3-5-sonnet-20241022",
-            max_tokens: 3000,
-            messages: [{ role: "user", content: systemPrompt }],
+            contents: [{ parts: [{ text: systemPrompt }] }],
+            generationConfig: {
+              responseMimeType: "application/json",
+            },
           }),
         });
 
         if (response.ok) {
           const resJson = await response.json();
-          const responseText = resJson.content[0].text;
+          const responseText = resJson.candidates[0].content.parts[0].text;
           const parsedPlan = JSON.parse(responseText.trim());
 
           for (const item of parsedPlan) {
@@ -170,13 +169,13 @@ export async function POST(req: Request) {
             }
           }
         } else {
-          throw new Error("Claude API request failed");
+          throw new Error("Gemini API request failed");
         }
       } catch (err) {
-        console.error("Claude Autopilot error, falling back to smart recommendation:", err);
+        console.error("Gemini Autopilot error, falling back to smart recommendation:", err);
         // Fallback to randomized
         for (const dStr of dateStrings) {
-          for (const type of ["Breakfast", "Lunch", "Dinner", "Snack"]) {
+          for (const type of ["Breakfast", "Lunch", "Dinner"]) {
             const recipe = filteredRecipes[Math.floor(Math.random() * filteredRecipes.length)];
             const planned = await prisma.plannedMeal.create({
               data: {

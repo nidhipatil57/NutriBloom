@@ -333,7 +333,7 @@ export default function MealLogPage() {
     };
 
     rec.onerror = (e: any) => {
-      console.error(e);
+      console.warn("Voice capture error:", e);
       error("Voice capture encountered an error.");
       setIsListening(false);
     };
@@ -406,30 +406,49 @@ export default function MealLogPage() {
     }
   };
 
-  // CLAUDE VISION IMAGE SCANNER IMPLEMENTATION
-  const handleScanMockImage = async () => {
+  // Gemini Vision Image Scanning logic is handled in handleImageUpload.
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      error("Image size must be less than 10MB.");
+      return;
+    }
+
     setIsScanning(true);
     setScannedResult(null);
-    try {
-      // Mock passing an image base64. 
-      // The API falls back to Avocado Toast or passes to Claude if key is available.
-      const res = await fetch("/api/meals/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageBase64: "mock_image_base64_data", mimeType: "image/jpeg" }),
-      });
-      if (res.ok) {
-        const json = await res.json();
-        setScannedResult(json);
-      } else {
-        error("Failed to analyze meal image.");
+
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64String = reader.result as string;
+      setScanImageBase64(base64String);
+      try {
+        const res = await fetch("/api/meals/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            imageBase64: base64String,
+            mimeType: file.type,
+          }),
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          setScannedResult(json);
+          success(`Scanned ${json.name || "meal"} successfully!`);
+        } else {
+          error("Failed to analyze meal image.");
+        }
+      } catch (err) {
+        console.error(err);
+        error("Error scanning meal image.");
+      } finally {
+        setIsScanning(false);
       }
-    } catch (err) {
-      console.error(err);
-      error("Error scanning meal image.");
-    } finally {
-      setIsScanning(false);
-    }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSaveScanResult = async () => {
@@ -454,6 +473,7 @@ export default function MealLogPage() {
       if (res.ok) {
         success(`Successfully logged ${scannedResult.name} to ${targetMealSlot}!`);
         setShowScanModal(false);
+        setScanImageBase64("");
         setScannedResult(null);
         fetchDayData();
       } else {
@@ -470,7 +490,8 @@ export default function MealLogPage() {
   );
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="fade-in">
+    <>
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="fade-in">
       
       {/* Date Selector Header */}
       <div className="glass-card" style={{ padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
@@ -600,7 +621,7 @@ export default function MealLogPage() {
       ) : (
         /* MEAL SLOTS LIST */
         <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {["Breakfast", "Lunch", "Dinner", "Snack"].map((slot) => {
+          {["Breakfast", "Lunch", "Dinner"].map((slot) => {
             // Find entries matching slot
             const group = mealGroups.find(
               (g) => g.mealType.toLowerCase() === slot.toLowerCase()
@@ -634,6 +655,8 @@ export default function MealLogPage() {
                     <button
                       onClick={() => {
                         setTargetMealSlot(slot);
+                        setScanImageBase64("");
+                        setScannedResult(null);
                         setShowScanModal(true);
                       }}
                       className="btn btn-secondary btn-sm"
@@ -701,6 +724,7 @@ export default function MealLogPage() {
           })}
         </div>
       )}
+      </div>
 
       {/* ADD ITEM DIALOG (SEARCH RECIPES / ONE-OFF CUSTOM FORM) */}
       {showAddModal && (
@@ -1004,6 +1028,8 @@ export default function MealLogPage() {
             style={{
               width: "100%",
               maxWidth: "400px",
+              maxHeight: "85vh",
+              overflowY: "auto",
               padding: "28px",
               display: "flex",
               flexDirection: "column",
@@ -1135,13 +1161,15 @@ export default function MealLogPage() {
             justifyContent: "center",
             zIndex: 1000,
           }}
-          onClick={() => setShowScanModal(false)}
+          onClick={() => { setShowScanModal(false); setScanImageBase64(""); setScannedResult(null); }}
         >
           <div
             className="glass-card fade-in"
             style={{
               width: "100%",
               maxWidth: "440px",
+              maxHeight: "85vh",
+              overflowY: "auto",
               padding: "28px",
               display: "flex",
               flexDirection: "column",
@@ -1151,7 +1179,7 @@ export default function MealLogPage() {
           >
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <h3 style={{ fontSize: "16px", fontWeight: 800 }}>AI Food Photo Scanner</h3>
-              <button onClick={() => setShowScanModal(false)} className="btn btn-icon btn-ghost" style={{ borderRadius: "50%" }}>
+              <button onClick={() => { setShowScanModal(false); setScanImageBase64(""); setScannedResult(null); }} className="btn btn-icon btn-ghost" style={{ borderRadius: "50%" }}>
                 <X size={16} />
               </button>
             </div>
@@ -1161,40 +1189,54 @@ export default function MealLogPage() {
               <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
                 <span style={{ fontSize: "13px", fontWeight: 600 }}>Analyze Food Image</span>
                 <span style={{ fontSize: "11px", color: "var(--text-muted)", maxWidth: "250px" }}>
-                  Upload a photo of your meal or trigger a mock camera scan to let Claude extract macros automatically.
+                  Upload a photo of your meal to let Gemini extract macros automatically.
                 </span>
               </div>
 
               {/* Scan triggers */}
-              <div style={{ display: "flex", gap: "10px", width: "100%", justifyContent: "center" }}>
-                <button
-                  type="button"
-                  onClick={handleScanMockImage}
-                  className="btn btn-primary btn-sm"
-                  style={{ gap: "6px" }}
-                  disabled={isScanning}
-                >
-                  {isScanning ? <RefreshCw size={14} className="spinning" /> : <Sparkles size={14} />}
-                  <span>Scan Mock Image</span>
-                </button>
+              <div style={{ display: "flex", gap: "10px", width: "100%", justifyContent: "center", flexWrap: "wrap" }}>
+                <label className="btn btn-primary btn-sm" style={{ gap: "6px", cursor: "pointer" }}>
+                  <Upload size={14} />
+                  <span>Upload Meal Photo</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    style={{ display: "none" }}
+                    disabled={isScanning}
+                  />
+                </label>
               </div>
             </div>
+
+            {scanImageBase64 && !scannedResult && (
+              <div style={{ width: "100%", height: "180px", borderRadius: "var(--radius-lg)", overflow: "hidden", border: "1px solid var(--border)", background: "rgba(0,0,0,0.2)" }}>
+                <img src={scanImageBase64} alt="Scanned meal" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            )}
 
             {isScanning && (
               <div style={{ display: "flex", justifyContent: "center", padding: "16px", gap: "8px", alignItems: "center" }}>
                 <RefreshCw size={16} className="spinning" style={{ color: "var(--primary)" }} />
-                <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Claude is analyzing meal contents...</span>
+                <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>Gemini is analyzing meal contents...</span>
               </div>
             )}
 
             {scannedResult && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px", padding: "16px", background: "rgba(16, 185, 129, 0.03)", borderRadius: "var(--radius-md)", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px", padding: "16px", background: "rgba(16, 185, 129, 0.03)", borderRadius: "var(--radius-md)", border: "1px solid rgba(16, 185, 129, 0.2)" }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ fontSize: "11px", color: "var(--primary-light)", fontWeight: 700, textTransform: "uppercase" }}>
                     Image Analysis Results
                   </span>
                   <span className="badge badge-success" style={{ fontSize: "10px" }}>Confidence: {scannedResult.confidence}</span>
                 </div>
+                
+                {scanImageBase64 && (
+                  <div style={{ width: "100%", height: "160px", borderRadius: "var(--radius-md)", overflow: "hidden", border: "1px solid var(--border)" }}>
+                    <img src={scanImageBase64} alt="Scanned meal" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  </div>
+                )}
+
                 <div>
                   <strong style={{ fontSize: "14px" }}>{scannedResult.name}</strong>
                   <p style={{ fontSize: "11px", color: "var(--text-secondary)", marginTop: "4px" }}>{scannedResult.notes}</p>
@@ -1234,6 +1276,6 @@ export default function MealLogPage() {
         </div>
       )}
 
-    </div>
+    </>
   );
 }

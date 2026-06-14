@@ -66,7 +66,7 @@ export async function GET() {
     });
 
     // Format meals for timeline
-    const formattedMeals = ["Breakfast", "Lunch", "Dinner", "Snack"].map((mealType) => {
+    const formattedMeals = ["Breakfast", "Lunch", "Dinner"].map((mealType) => {
       const found = meals.find((m) => m.mealType.toLowerCase() === mealType.toLowerCase());
       const entries = found
         ? found.entries.map((e) => ({

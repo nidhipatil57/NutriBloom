@@ -385,7 +385,7 @@ function SignupContent() {
                 d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.42 0 3.36 2.43 1.37 6.02l4.08 2.89c.92-2.77 3.5-4.83 6.55-4.83z"
               />
             </svg>
-            <span>Google Workspace</span>
+            <span>{isLoading ? "Connecting to Google..." : "Continue with Google"}</span>
           </button>
 
           {/* Redirect to Login */}

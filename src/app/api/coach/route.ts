@@ -63,8 +63,8 @@ export async function POST(req: Request) {
     
     Keep responses friendly, supportive, actionable, and under 3-4 sentences. Focus on helping them hit their macronutrient splits and hydration goals. Use emojis occasionally (🌿, 💧, 💪).`;
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("sk-ant-api-placeholder-keys") || !apiKey.startsWith("sk-ant-");
+    const apiKey = process.env.GEMINI_API_KEY;
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("gemini-placeholder") || (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ."));
 
     if (isApiKeyPlaceholder) {
       // ── SMART MOCK COACH RESPONSE FALLBACK ──
@@ -87,39 +87,30 @@ export async function POST(req: Request) {
       return NextResponse.json({ reply });
     }
 
-    // ── CALL ANTHROPIC CLAUDE API ──
-    const messagesBody = [
-      { role: "user", content: systemPrompt },
-      ...messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
-    ];
+    // ── CALL GOOGLE GEMINI API ──
+    const geminiMessages = messages.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
       method: "POST",
       headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 400,
-        messages: messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
-        system: systemPrompt,
+        contents: geminiMessages,
+        systemInstruction: { parts: [{ text: systemPrompt }] },
       }),
     });
 
     if (response.ok) {
       const resJson = await response.json();
-      const reply = resJson.content[0].text;
+      const reply = resJson.candidates[0].content.parts[0].text.trim();
       return NextResponse.json({ reply });
     } else {
-      throw new Error("Claude API request failed");
+      throw new Error("Gemini API request failed");
     }
   } catch (err) {
     console.error("Coach API POST error:", err);

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 // GET /api/recipes?q=&cuisine=&diet=&maxCalories=&minProtein=&page=
 export async function GET(req: Request) {
   try {
@@ -164,6 +166,36 @@ export async function GET(req: Request) {
       });
     }
 
+    const popularityScore = (title: string): number => {
+      const t = title.toLowerCase();
+      if (t.includes("biryani")) return 100;
+      if (t.includes("paneer butter masala")) return 99;
+      if (t.includes("classic butter chicken") || t.includes("butter chicken")) return 98;
+      if (t.includes("dal tadka") || t.includes("lentil tadka")) return 97;
+      if (t.includes("chana masala") || t.includes("chickpea curry")) return 96;
+      if (t.includes("palak paneer") || t.includes("spinach cottage cheese")) return 95;
+      if (t.includes("avocado toast")) return 94;
+      if (t.includes("egg bhurji")) return 93;
+      if (t.includes("aloo gobi")) return 92;
+      if (t.includes("grilled chicken salad")) return 91;
+      if (t.includes("mango lassi")) return 90;
+      if (t.includes("carrot halwa") || t.includes("gajar ka halwa")) return 89;
+      if (t.includes("rice kheer") || t.includes("rice pudding")) return 88;
+      if (t.includes("quesadilla")) return 87;
+      if (t.includes("fajita")) return 86;
+      if (t.includes("shakshuka")) return 85;
+      if (t.includes("salmon")) return 84;
+      if (t.includes("parfait")) return 83;
+      if (t.includes("oatmeal")) return 82;
+      if (t.includes("shrimp pasta")) return 81;
+      if (t.includes("wrap")) return 80;
+      if (t.includes("buddha bowl")) return 79;
+      if (t.includes("stir-fry") || t.includes("tofu")) return 78;
+      if (t.includes("smoothie")) return 77;
+      if (t.includes("chia chocolate pudding") || t.includes("chia pudding")) return 76;
+      return 50;
+    };
+
     // Interleave Veg/Non-Veg
     const veg = recipes.filter((r) => {
       try {
@@ -172,7 +204,7 @@ export async function GET(req: Request) {
       } catch {
         return false;
       }
-    });
+    }).sort((a, b) => popularityScore(b.title) - popularityScore(a.title));
 
     const nonVeg = recipes.filter((r) => {
       try {
@@ -181,7 +213,7 @@ export async function GET(req: Request) {
       } catch {
         return true;
       }
-    });
+    }).sort((a, b) => popularityScore(b.title) - popularityScore(a.title));
 
     const interleaved: typeof recipes = [];
     const maxLen = Math.max(veg.length, nonVeg.length);

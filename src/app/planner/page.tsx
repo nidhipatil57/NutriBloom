@@ -197,228 +197,230 @@ export default function PlannerPage() {
     r.title.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const mealSlots = ["Breakfast", "Lunch", "Dinner", "Snack"];
+  const mealSlots = ["Breakfast", "Lunch", "Dinner"];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="fade-in">
-      
-      {/* Header controls panel */}
-      <div className="glass-card" style={{ padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <CalendarClock size={20} style={{ color: "var(--primary)" }} />
-          <div>
-            <h2 style={{ fontSize: "18px", fontWeight: 800 }}>Weekly Diet Planner</h2>
-            <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-              Week: {new Date(startDateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - {new Date(endDateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+    <>
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="fade-in">
+        
+        {/* Header controls panel */}
+        <div className="glass-card" style={{ padding: "20px 24px", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "16px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <CalendarClock size={20} style={{ color: "var(--primary)" }} />
+            <div>
+              <h2 style={{ fontSize: "18px", fontWeight: 800 }}>Weekly Diet Planner</h2>
+              <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
+                Week: {new Date(startDateStr).toLocaleDateString("en-US", { month: "short", day: "numeric" })} - {new Date(endDateStr).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+              </span>
+            </div>
+          </div>
+
+          {/* Shift week navigator */}
+          <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <button onClick={() => shiftWeek(-1)} className="btn btn-secondary btn-icon" style={{ borderRadius: "50%" }}>
+              <ChevronLeft size={16} />
+            </button>
+            
+            <button 
+              onClick={() => {
+                const today = new Date();
+                const day = today.getDay();
+                const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+                setMondayDate(new Date(today.setDate(diff)));
+              }}
+              className="btn btn-secondary btn-sm"
+            >
+              Current Week
+            </button>
+
+            <button onClick={() => shiftWeek(1)} className="btn btn-secondary btn-icon" style={{ borderRadius: "50%" }}>
+              <ChevronRight size={16} />
+            </button>
+          </div>
+
+          {/* Autopilot Button */}
+          <button
+            onClick={handleTriggerAutopilot}
+            className="btn btn-primary"
+            style={{ gap: "8px" }}
+            disabled={isAutopilotRunning}
+          >
+            {isAutopilotRunning ? (
+              <>
+                <RefreshCw size={16} className="spinning" />
+                <span>Autopilot Generating...</span>
+              </>
+            ) : (
+              <>
+                <Bot size={16} />
+                <span>Run AI Autopilot</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Autopilot Loader Backdrop */}
+        {isAutopilotRunning && (
+          <div style={{ background: "rgba(10, 15, 26, 0.4)", border: "1px solid rgba(16, 185, 129, 0.2)", padding: "16px", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", gap: "12px" }} className="pulse-glow">
+            <Sparkles size={16} style={{ color: "var(--primary)" }} className="spinning" />
+            <span style={{ fontSize: "13px", fontWeight: 600 }}>
+              Smart recommending algorithm is searching seeded recipes to balance macro percentages and excludings...
             </span>
           </div>
-        </div>
+        )}
 
-        {/* Shift week navigator */}
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <button onClick={() => shiftWeek(-1)} className="btn btn-secondary btn-icon" style={{ borderRadius: "50%" }}>
-            <ChevronLeft size={16} />
-          </button>
-          
-          <button 
-            onClick={() => {
-              const today = new Date();
-              const day = today.getDay();
-              const diff = today.getDate() - day + (day === 0 ? -6 : 1);
-              setMondayDate(new Date(today.setDate(diff)));
+        {/* 7x4 Weekly Grid layout */}
+        {isLoading ? (
+          <div className="skeleton" style={{ height: "450px" }} />
+        ) : (
+          <div 
+            className="glass-card" 
+            style={{ 
+              overflowX: "auto", 
+              padding: "20px", 
+              border: "1px solid var(--glass-border)",
+              background: "var(--glass)"
             }}
-            className="btn btn-secondary btn-sm"
           >
-            Current Week
-          </button>
+            <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
+              <thead>
+                <tr>
+                  <th style={{ width: "100px", padding: "12px", borderBottom: "1px solid var(--border)", textAlign: "left", fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase" }}>Slot</th>
+                  {weekDates.map((day) => (
+                    <th 
+                      key={day.dateStr}
+                      style={{ 
+                        padding: "12px", 
+                        borderBottom: "1px solid var(--border)", 
+                        textAlign: "center",
+                        width: "calc((100% - 100px) / 7)"
+                      }}
+                    >
+                      <span style={{ fontSize: "14px", fontWeight: 700, display: "block" }}>{day.label.split(",")[0]}</span>
+                      <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{day.label.split(",")[1]}</span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {mealSlots.map((slot) => (
+                  <tr key={slot} style={{ borderBottom: "1px solid var(--border)" }}>
+                    <td style={{ padding: "16px 12px", fontSize: "13px", fontWeight: 700, color: "var(--text-secondary)" }}>
+                      {slot}
+                    </td>
+                    {weekDates.map((day) => {
+                      // Find planned meal for this slot & date
+                      const planned = plannedMeals.find(
+                        (p) => p.date === day.dateStr && p.mealType.toLowerCase() === slot.toLowerCase()
+                      );
 
-          <button onClick={() => shiftWeek(1)} className="btn btn-secondary btn-icon" style={{ borderRadius: "50%" }}>
-            <ChevronRight size={16} />
-          </button>
-        </div>
-
-        {/* Autopilot Button */}
-        <button
-          onClick={handleTriggerAutopilot}
-          className="btn btn-primary"
-          style={{ gap: "8px" }}
-          disabled={isAutopilotRunning}
-        >
-          {isAutopilotRunning ? (
-            <>
-              <RefreshCw size={16} className="spinning" />
-              <span>Autopilot Generating...</span>
-            </>
-          ) : (
-            <>
-              <Bot size={16} />
-              <span>Run AI Autopilot</span>
-            </>
-          )}
-        </button>
-      </div>
-
-      {/* Autopilot Loader Backdrop */}
-      {isAutopilotRunning && (
-        <div style={{ background: "rgba(10, 15, 26, 0.4)", border: "1px solid rgba(16, 185, 129, 0.2)", padding: "16px", borderRadius: "var(--radius-lg)", display: "flex", alignItems: "center", gap: "12px" }} className="pulse-glow">
-          <Sparkles size={16} style={{ color: "var(--primary)" }} className="spinning" />
-          <span style={{ fontSize: "13px", fontWeight: 600 }}>
-            Smart recommending algorithm is searching seeded recipes to balance macro percentages and excludings...
-          </span>
-        </div>
-      )}
-
-      {/* 7x4 Weekly Grid layout */}
-      {isLoading ? (
-        <div className="skeleton" style={{ height: "450px" }} />
-      ) : (
-        <div 
-          className="glass-card" 
-          style={{ 
-            overflowX: "auto", 
-            padding: "20px", 
-            border: "1px solid var(--glass-border)",
-            background: "var(--glass)"
-          }}
-        >
-          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: "900px" }}>
-            <thead>
-              <tr>
-                <th style={{ width: "100px", padding: "12px", borderBottom: "1px solid var(--border)", textAlign: "left", fontSize: "12px", color: "var(--text-muted)", textTransform: "uppercase" }}>Slot</th>
-                {weekDates.map((day) => (
-                  <th 
-                    key={day.dateStr}
-                    style={{ 
-                      padding: "12px", 
-                      borderBottom: "1px solid var(--border)", 
-                      textAlign: "center",
-                      width: "calc((100% - 100px) / 7)"
-                    }}
-                  >
-                    <span style={{ fontSize: "14px", fontWeight: 700, display: "block" }}>{day.label.split(",")[0]}</span>
-                    <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{day.label.split(",")[1]}</span>
-                  </th>
+                      return (
+                        <td key={day.dateStr} style={{ padding: "10px", verticalAlign: "top", height: "100px" }}>
+                          {planned ? (
+                            <div 
+                              style={{ 
+                                background: "var(--bg-elevated)", 
+                                border: "1px solid var(--border)", 
+                                borderRadius: "var(--radius-md)", 
+                                padding: "8px 10px", 
+                                display: "flex", 
+                                flexDirection: "column",
+                                justifyContent: "space-between",
+                                height: "100%",
+                                gap: "6px"
+                              }}
+                            >
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px" }}>
+                                <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                                  {planned.recipe?.title}
+                                </span>
+                                <button
+                                  onClick={() => handleDeletePlanned(planned.id)}
+                                  style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: 0 }}
+                                >
+                                  <Trash2 size={11} hover-color="var(--danger)" />
+                                </button>
+                              </div>
+                              <span style={{ fontSize: "10px", color: "var(--primary-light)", fontWeight: 600 }}>
+                                {Math.round(planned.calories)} kcal
+                              </span>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setSelectedCell({ date: day.dateStr, mealType: slot });
+                                setShowAddModal(true);
+                              }}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                background: "rgba(148, 163, 184, 0.02)",
+                                border: "1px dashed var(--border)",
+                                borderRadius: "var(--radius-md)",
+                                cursor: "pointer",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                gap: "4px",
+                                color: "var(--text-muted)",
+                                fontSize: "12px",
+                                transition: "all var(--transition)"
+                              }}
+                              onMouseOver={(e) => {
+                                e.currentTarget.style.borderColor = "var(--primary)";
+                                e.currentTarget.style.color = "var(--primary-light)";
+                              }}
+                              onMouseOut={(e) => {
+                                e.currentTarget.style.borderColor = "var(--border)";
+                                e.currentTarget.style.color = "var(--text-muted)";
+                              }}
+                            >
+                              <Plus size={12} />
+                              <span>Plan</span>
+                            </button>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
                 ))}
-              </tr>
-            </thead>
-            <tbody>
-              {mealSlots.map((slot) => (
-                <tr key={slot} style={{ borderBottom: "1px solid var(--border)" }}>
-                  <td style={{ padding: "16px 12px", fontSize: "13px", fontWeight: 700, color: "var(--text-secondary)" }}>
-                    {slot}
+                
+                {/* Daily Target Adherence Summary Row */}
+                <tr>
+                  <td style={{ padding: "16px 12px", fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>
+                    Daily Total
                   </td>
                   {weekDates.map((day) => {
-                    // Find planned meal for this slot & date
-                    const planned = plannedMeals.find(
-                      (p) => p.date === day.dateStr && p.mealType.toLowerCase() === slot.toLowerCase()
-                    );
+                    const dayMeals = plannedMeals.filter((p) => p.date === day.dateStr);
+                    const totalCals = dayMeals.reduce((sum, p) => sum + p.calories, 0);
+                    const isAdherent = totalCals > 0 && Math.abs(totalCals - calorieTarget) <= 200;
+                    const isOver = totalCals > calorieTarget + 200;
 
                     return (
-                      <td key={day.dateStr} style={{ padding: "10px", verticalAlign: "top", height: "100px" }}>
-                        {planned ? (
-                          <div 
-                            style={{ 
-                              background: "var(--bg-elevated)", 
-                              border: "1px solid var(--border)", 
-                              borderRadius: "var(--radius-md)", 
-                              padding: "8px 10px", 
-                              display: "flex", 
-                              flexDirection: "column",
-                              justifyContent: "space-between",
-                              height: "100%",
-                              gap: "6px"
-                            }}
-                          >
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "6px" }}>
-                              <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-primary)", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                                {planned.recipe?.title}
-                              </span>
-                              <button
-                                onClick={() => handleDeletePlanned(planned.id)}
-                                style={{ background: "none", border: "none", color: "var(--text-muted)", cursor: "pointer", padding: 0 }}
-                              >
-                                <Trash2 size={11} hover-color="var(--danger)" />
-                              </button>
-                            </div>
-                            <span style={{ fontSize: "10px", color: "var(--primary-light)", fontWeight: 600 }}>
-                              {Math.round(planned.calories)} kcal
-                            </span>
+                      <td key={day.dateStr} style={{ padding: "12px 10px", textAlign: "center" }}>
+                        <span style={{ fontSize: "13px", fontWeight: 800, color: totalCals > 0 ? "var(--text-primary)" : "var(--text-muted)" }}>
+                          {Math.round(totalCals)} kcal
+                        </span>
+                        {totalCals > 0 && (
+                          <div style={{ marginTop: "4px" }}>
+                            {isAdherent ? (
+                              <span className="badge badge-success">Target Hit</span>
+                            ) : isOver ? (
+                              <span className="badge badge-danger">Surplus</span>
+                            ) : (
+                              <span className="badge badge-warning">Deficit</span>
+                            )}
                           </div>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setSelectedCell({ date: day.dateStr, mealType: slot });
-                              setShowAddModal(true);
-                            }}
-                            style={{
-                              width: "100%",
-                              height: "100%",
-                              background: "rgba(148, 163, 184, 0.02)",
-                              border: "1px dashed var(--border)",
-                              borderRadius: "var(--radius-md)",
-                              cursor: "pointer",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              gap: "4px",
-                              color: "var(--text-muted)",
-                              fontSize: "12px",
-                              transition: "all var(--transition)"
-                            }}
-                            onMouseOver={(e) => {
-                              e.currentTarget.style.borderColor = "var(--primary)";
-                              e.currentTarget.style.color = "var(--primary-light)";
-                            }}
-                            onMouseOut={(e) => {
-                              e.currentTarget.style.borderColor = "var(--border)";
-                              e.currentTarget.style.color = "var(--text-muted)";
-                            }}
-                          >
-                            <Plus size={12} />
-                            <span>Plan</span>
-                          </button>
                         )}
                       </td>
                     );
                   })}
                 </tr>
-              ))}
-              
-              {/* Daily Target Adherence Summary Row */}
-              <tr>
-                <td style={{ padding: "16px 12px", fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>
-                  Daily Total
-                </td>
-                {weekDates.map((day) => {
-                  const dayMeals = plannedMeals.filter((p) => p.date === day.dateStr);
-                  const totalCals = dayMeals.reduce((sum, p) => sum + p.calories, 0);
-                  const isAdherent = totalCals > 0 && Math.abs(totalCals - calorieTarget) <= 200;
-                  const isOver = totalCals > calorieTarget + 200;
-
-                  return (
-                    <td key={day.dateStr} style={{ padding: "12px 10px", textAlign: "center" }}>
-                      <span style={{ fontSize: "13px", fontWeight: 800, color: totalCals > 0 ? "var(--text-primary)" : "var(--text-muted)" }}>
-                        {Math.round(totalCals)} kcal
-                      </span>
-                      {totalCals > 0 && (
-                        <div style={{ marginTop: "4px" }}>
-                          {isAdherent ? (
-                            <span className="badge badge-success">Target Hit</span>
-                          ) : isOver ? (
-                            <span className="badge badge-danger">Surplus</span>
-                          ) : (
-                            <span className="badge badge-warning">Deficit</span>
-                          )}
-                        </div>
-                      )}
-                    </td>
-                  );
-                })}
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </div>
 
       {/* RECIPE SELECT DIALOG */}
       {showAddModal && selectedCell && (
@@ -512,7 +514,6 @@ export default function PlannerPage() {
           </div>
         </div>
       )}
-
-    </div>
+    </>
   );
 }

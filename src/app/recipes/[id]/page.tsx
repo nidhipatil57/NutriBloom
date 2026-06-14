@@ -231,230 +231,232 @@ export default function RecipeDetailPage(props: PageProps) {
   const dietsList = JSON.parse(recipe.diets || "[]") as string[];
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="fade-in">
-      
-      {/* Header / Actions bar */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-        <button onClick={() => router.push("/recipes")} className="btn btn-secondary" style={{ gap: "8px" }}>
-          <ArrowLeft size={16} />
-          <span>Back to Vault</span>
-        </button>
-
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button onClick={handleToggleSave} className="btn btn-secondary" style={{ gap: "8px" }}>
-            <Heart size={16} style={{ color: isSaved ? "var(--primary)" : "var(--text-secondary)", fill: isSaved ? "var(--primary)" : "none" }} />
-            <span>{isSaved ? "Saved" : "Save to Favorites"}</span>
-          </button>
-          <button onClick={() => setShowLogModal(true)} className="btn btn-secondary" style={{ gap: "8px" }}>
-            <Utensils size={16} />
-            <span>Add to Log</span>
-          </button>
-          <button onClick={() => setShowPlanModal(true)} className="btn btn-primary" style={{ gap: "8px" }}>
-            <Calendar size={16} />
-            <span>Add to Planner</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main Glass Layout Banner */}
-      {/* Main Glass Layout Banner */}
-      <div className="glass-card" style={{ padding: "32px", overflow: "hidden", position: "relative" }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-          {/* Diets list row */}
-          {dietsList.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              {dietsList.map((diet) => (
-                <span key={diet} className="badge badge-primary" style={{ background: "rgba(16, 185, 129, 0.12)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.2)", fontWeight: 700 }}>
-                  {diet}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {/* Title & Cuisine */}
-          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Sparkles size={16} style={{ color: "var(--primary)" }} />
-              <span style={{ fontSize: "12px", color: "var(--primary-light)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
-                {cuisinesList.join(" · ") || "Chef's Healthy Recommendation"}
-              </span>
-            </div>
-            <h2 style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.5px" }}>{recipe.title}</h2>
-          </div>
-
-          <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }} 
-             dangerouslySetInnerHTML={{ __html: recipe.summary || "This premium healthy recipe is packed with balanced macros and essential trace nutrients to support your metabolic recovery goals." }} />
-
-          {/* Quick stats strip */}
-          <div style={{ display: "flex", gap: "24px", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "16px 0", fontSize: "14px", color: "var(--text-secondary)" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Clock size={18} style={{ color: "var(--text-muted)" }} />
-              <div>
-                <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Ready Time</span>
-                <strong>{recipe.readyInMinutes} Mins</strong>
-              </div>
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-              <Users size={18} style={{ color: "var(--text-muted)" }} />
-              <div>
-                <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Serving Size</span>
-                <strong>{recipe.servings} Serving{recipe.servings > 1 ? "s" : ""}</strong>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Macros Dashboard & Nutrition Facts */}
-      <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-        <h3 style={{ fontSize: "18px", fontWeight: 800, display: "flex", alignItems: "center", gap: "8px" }}>
-          <Sparkle size={18} style={{ color: "var(--primary)" }} />
-          <span>Macro Diagnostics</span>
-        </h3>
+    <>
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="fade-in">
         
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "16px" }}>
-          {/* Calorie Card */}
-          <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid var(--primary)" }}>
-            <Flame size={24} style={{ color: "var(--primary)" }} />
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Calories</span>
-            <span style={{ fontSize: "20px", fontWeight: 800 }}>{Math.round(recipe.calories)} kcal</span>
-          </div>
-
-          {/* Protein Card */}
-          <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid var(--blue)" }}>
-            <Dumbbell size={24} style={{ color: "var(--blue)" }} />
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Proteins</span>
-            <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--blue)" }}>{Math.round(recipe.protein)}g</span>
-          </div>
-
-          {/* Carbs Card */}
-          <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid var(--accent)" }}>
-            <Apple size={24} style={{ color: "var(--accent)" }} />
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Carbohydrates</span>
-            <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--accent)" }}>{Math.round(recipe.carbs)}g</span>
-          </div>
-
-          {/* Fat Card */}
-          <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid var(--pink)" }}>
-            <Utensils size={24} style={{ color: "var(--pink)" }} />
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Fats</span>
-            <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--pink)" }}>{Math.round(recipe.fat)}g</span>
-          </div>
-
-          {/* Fiber Card */}
-          <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid #10b981" }}>
-            <BookOpen size={24} style={{ color: "#10b981" }} />
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Dietary Fiber</span>
-            <span style={{ fontSize: "20px", fontWeight: 800, color: "#10b981" }}>{Math.round(recipe.fiber)}g</span>
-          </div>
-
-          {/* Sugar Card */}
-          <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid #8b5cf6" }}>
-            <Sparkle size={24} style={{ color: "#8b5cf6" }} />
-            <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Net Sugars</span>
-            <span style={{ fontSize: "20px", fontWeight: 800, color: "#8b5cf6" }}>{Math.round(recipe.sugar)}g</span>
+        {/* Header / Actions bar */}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
+          <button onClick={() => router.push("/recipes")} className="btn btn-secondary" style={{ gap: "8px" }}>
+            <ArrowLeft size={16} />
+            <span>Back to Vault</span>
+          </button>
+  
+          <div style={{ display: "flex", gap: "8px" }}>
+            <button onClick={handleToggleSave} className="btn btn-secondary" style={{ gap: "8px" }}>
+              <Heart size={16} style={{ color: isSaved ? "var(--primary)" : "var(--text-secondary)", fill: isSaved ? "var(--primary)" : "none" }} />
+              <span>{isSaved ? "Saved" : "Save to Favorites"}</span>
+            </button>
+            <button onClick={() => setShowLogModal(true)} className="btn btn-secondary" style={{ gap: "8px" }}>
+              <Utensils size={16} />
+              <span>Add to Log</span>
+            </button>
+            <button onClick={() => setShowPlanModal(true)} className="btn btn-primary" style={{ gap: "8px" }}>
+              <Calendar size={16} />
+              <span>Add to Planner</span>
+            </button>
           </div>
         </div>
-      </div>
-
-      {/* Recipe Core Content: Ingredients & Instructions split */}
-      <div className="content-grid" style={{ gap: "24px" }}>
-        <style dangerouslySetInnerHTML={{__html: `
-          .content-grid {
-            display: flex;
-            flex-direction: column;
-          }
-          @media (min-width: 768px) {
-            .content-grid {
-              display: grid !important;
-              grid-template-columns: 1fr 1.5fr !important;
-            }
-          }
-        `}} />
-          
-        {/* Ingredients checklist card */}
-        <div className="glass-card" style={{ padding: "28px" }}>
-          <h3 style={{ fontSize: "16px", fontWeight: 800, borderBottom: "1px solid var(--border)", paddingBottom: "12px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-            <Utensils size={18} style={{ color: "var(--primary)" }} />
-            <span>Required Ingredients</span>
-          </h3>
-          
-          {recipe.ingredients && recipe.ingredients.length > 0 ? (
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              {/* Organize ingredients by Aisle */}
-              {Array.from(new Set(recipe.ingredients.map(i => i.ingredient?.aisle || "Pantry"))).map((aisle) => (
-                <div key={aisle} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--primary-light)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                    {aisle}
+  
+        {/* Main Glass Layout Banner */}
+        {/* Main Glass Layout Banner */}
+        <div className="glass-card" style={{ padding: "32px", overflow: "hidden", position: "relative" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+            {/* Diets list row */}
+            {dietsList.length > 0 && (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {dietsList.map((diet) => (
+                  <span key={diet} className="badge badge-primary" style={{ background: "rgba(16, 185, 129, 0.12)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.2)", fontWeight: 700 }}>
+                    {diet}
                   </span>
-                  <ul style={{ display: "flex", flexDirection: "column", gap: "6px", listStyleType: "none", padding: 0 }}>
-                    {recipe.ingredients?.filter(i => (i.ingredient?.aisle || "Pantry") === aisle).map((ing, idx) => (
-                      <li key={idx} style={{ 
-                        fontSize: "13px", 
-                        color: "var(--text-secondary)", 
-                        display: "flex", 
-                        justifyContent: "space-between", 
-                        alignItems: "center",
-                        padding: "6px 8px",
-                        background: "rgba(148, 163, 184, 0.02)",
-                        borderRadius: "var(--radius-sm)",
-                        border: "1px solid rgba(255,255,255,0.02)"
-                      }}>
-                        <span>{ing.ingredient?.name ? ing.ingredient.name.charAt(0).toUpperCase() + ing.ingredient.name.slice(1) : ing.original}</span>
-                        <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
-                          {ing.amount} {ing.unit}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+                ))}
+              </div>
+            )}
+  
+            {/* Title & Cuisine */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <Sparkles size={16} style={{ color: "var(--primary)" }} />
+                <span style={{ fontSize: "12px", color: "var(--primary-light)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
+                  {cuisinesList.join(" · ") || "Chef's Healthy Recommendation"}
+                </span>
+              </div>
+              <h2 style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.5px" }}>{recipe.title}</h2>
             </div>
-          ) : (
-            <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>Ingredient specifications not loaded.</p>
-          )}
+  
+            <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }} 
+               dangerouslySetInnerHTML={{ __html: recipe.summary || "This premium healthy recipe is packed with balanced macros and essential trace nutrients to support your metabolic recovery goals." }} />
+  
+            {/* Quick stats strip */}
+            <div style={{ display: "flex", gap: "24px", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "16px 0", fontSize: "14px", color: "var(--text-secondary)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Clock size={18} style={{ color: "var(--text-muted)" }} />
+                <div>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Ready Time</span>
+                  <strong>{recipe.readyInMinutes} Mins</strong>
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <Users size={18} style={{ color: "var(--text-muted)" }} />
+                <div>
+                  <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Serving Size</span>
+                  <strong>{recipe.servings} Serving{recipe.servings > 1 ? "s" : ""}</strong>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-
-        {/* Instructions Step-by-Step */}
-        <div className="glass-card" style={{ padding: "28px" }}>
-          <h3 style={{ fontSize: "16px", fontWeight: 800, borderBottom: "1px solid var(--border)", paddingBottom: "12px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-            <BookOpen size={18} style={{ color: "var(--primary)" }} />
-            <span>Step-by-Step Recipe Guide</span>
+  
+        {/* Macros Dashboard & Nutrition Facts */}
+        <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+          <h3 style={{ fontSize: "18px", fontWeight: 800, display: "flex", alignItems: "center", gap: "8px" }}>
+            <Sparkle size={18} style={{ color: "var(--primary)" }} />
+            <span>Macro Diagnostics</span>
           </h3>
-
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            {recipe.instructions ? (
-              recipe.instructions.split(/\n|(?=\d+\.)/).filter(line => line.trim()).map((step, idx) => {
-                const cleanStep = step.replace(/^\d+\.\s*/, "").trim();
-                return (
-                  <div key={idx} style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
-                    <div style={{ 
-                      background: "rgba(16, 185, 129, 0.15)", 
-                      color: "var(--primary)", 
-                      width: "26px", 
-                      height: "26px", 
-                      borderRadius: "50%", 
-                      display: "flex", 
-                      alignItems: "center", 
-                      justifyContent: "center", 
-                      fontSize: "12px", 
-                      fontWeight: 700,
-                      flexShrink: 0
-                    }}>
-                      {idx + 1}
-                    </div>
-                    <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0, paddingTop: "2px" }}>
-                      {cleanStep}
-                    </p>
+          
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", gap: "16px" }}>
+            {/* Calorie Card */}
+            <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid var(--primary)" }}>
+              <Flame size={24} style={{ color: "var(--primary)" }} />
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Calories</span>
+              <span style={{ fontSize: "20px", fontWeight: 800 }}>{Math.round(recipe.calories)} kcal</span>
+            </div>
+  
+            {/* Protein Card */}
+            <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid var(--blue)" }}>
+              <Dumbbell size={24} style={{ color: "var(--blue)" }} />
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Proteins</span>
+              <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--blue)" }}>{Math.round(recipe.protein)}g</span>
+            </div>
+  
+            {/* Carbs Card */}
+            <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid var(--accent)" }}>
+              <Apple size={24} style={{ color: "var(--accent)" }} />
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Carbohydrates</span>
+              <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--accent)" }}>{Math.round(recipe.carbs)}g</span>
+            </div>
+  
+            {/* Fat Card */}
+            <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid var(--pink)" }}>
+              <Utensils size={24} style={{ color: "var(--pink)" }} />
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Fats</span>
+              <span style={{ fontSize: "20px", fontWeight: 800, color: "var(--pink)" }}>{Math.round(recipe.fat)}g</span>
+            </div>
+  
+            {/* Fiber Card */}
+            <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid #10b981" }}>
+              <BookOpen size={24} style={{ color: "#10b981" }} />
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Dietary Fiber</span>
+              <span style={{ fontSize: "20px", fontWeight: 800, color: "#10b981" }}>{Math.round(recipe.fiber)}g</span>
+            </div>
+  
+            {/* Sugar Card */}
+            <div className="glass-card" style={{ padding: "20px", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px", borderTop: "3px solid #8b5cf6" }}>
+              <Sparkle size={24} style={{ color: "#8b5cf6" }} />
+              <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Net Sugars</span>
+              <span style={{ fontSize: "20px", fontWeight: 800, color: "#8b5cf6" }}>{Math.round(recipe.sugar)}g</span>
+            </div>
+          </div>
+        </div>
+  
+        {/* Recipe Core Content: Ingredients & Instructions split */}
+        <div className="content-grid" style={{ gap: "24px" }}>
+          <style dangerouslySetInnerHTML={{__html: `
+            .content-grid {
+              display: flex;
+              flex-direction: column;
+            }
+            @media (min-width: 768px) {
+              .content-grid {
+                display: grid !important;
+                grid-template-columns: 1fr 1.5fr !important;
+              }
+            }
+          `}} />
+            
+          {/* Ingredients checklist card */}
+          <div className="glass-card" style={{ padding: "28px" }}>
+            <h3 style={{ fontSize: "16px", fontWeight: 800, borderBottom: "1px solid var(--border)", paddingBottom: "12px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+              <Utensils size={18} style={{ color: "var(--primary)" }} />
+              <span>Required Ingredients</span>
+            </h3>
+            
+            {recipe.ingredients && recipe.ingredients.length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                {/* Organize ingredients by Aisle */}
+                {Array.from(new Set(recipe.ingredients.map(i => i.ingredient?.aisle || "Pantry"))).map((aisle) => (
+                  <div key={aisle} style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                    <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--primary-light)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                      {aisle}
+                    </span>
+                    <ul style={{ display: "flex", flexDirection: "column", gap: "6px", listStyleType: "none", padding: 0 }}>
+                      {recipe.ingredients?.filter(i => (i.ingredient?.aisle || "Pantry") === aisle).map((ing, idx) => (
+                        <li key={idx} style={{ 
+                          fontSize: "13px", 
+                          color: "var(--text-secondary)", 
+                          display: "flex", 
+                          justifyContent: "space-between", 
+                          alignItems: "center",
+                          padding: "6px 8px",
+                          background: "rgba(148, 163, 184, 0.02)",
+                          borderRadius: "var(--radius-sm)",
+                          border: "1px solid rgba(255,255,255,0.02)"
+                        }}>
+                          <span>{ing.ingredient?.name ? ing.ingredient.name.charAt(0).toUpperCase() + ing.ingredient.name.slice(1) : ing.original}</span>
+                          <span style={{ fontWeight: 600, color: "var(--text-primary)" }}>
+                            {ing.amount} {ing.unit}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-                );
-              })
+                ))}
+              </div>
             ) : (
-              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>No cooking step sequences defined. Simply assemble and plate.</p>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>Ingredient specifications not loaded.</p>
             )}
           </div>
+  
+          {/* Instructions Step-by-Step */}
+          <div className="glass-card" style={{ padding: "28px" }}>
+            <h3 style={{ fontSize: "16px", fontWeight: 800, borderBottom: "1px solid var(--border)", paddingBottom: "12px", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+              <BookOpen size={18} style={{ color: "var(--primary)" }} />
+              <span>Step-by-Step Recipe Guide</span>
+            </h3>
+  
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              {recipe.instructions ? (
+                recipe.instructions.split(/\n|(?=\d+\.)/).filter(line => line.trim()).map((step, idx) => {
+                  const cleanStep = step.replace(/^\d+\.\s*/, "").trim();
+                  return (
+                    <div key={idx} style={{ display: "flex", gap: "14px", alignItems: "flex-start" }}>
+                      <div style={{ 
+                        background: "rgba(16, 185, 129, 0.15)", 
+                        color: "var(--primary)", 
+                        width: "26px", 
+                        height: "26px", 
+                        borderRadius: "50%", 
+                        display: "flex", 
+                        alignItems: "center", 
+                        justifyContent: "center", 
+                        fontSize: "12px", 
+                        fontWeight: 700,
+                        flexShrink: 0
+                      }}>
+                        {idx + 1}
+                      </div>
+                      <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, margin: 0, paddingTop: "2px" }}>
+                        {cleanStep}
+                      </p>
+                    </div>
+                  );
+                })
+              ) : (
+                <p style={{ fontSize: "13px", color: "var(--text-muted)" }}>No cooking step sequences defined. Simply assemble and plate.</p>
+              )}
+            </div>
+          </div>
+  
         </div>
-
       </div>
 
       {/* LOG MEAL DIALOG OVERLAY */}
@@ -517,7 +519,6 @@ export default function RecipeDetailPage(props: PageProps) {
                   <option value="Breakfast">Breakfast</option>
                   <option value="Lunch">Lunch</option>
                   <option value="Dinner">Dinner</option>
-                  <option value="Snack">Snack</option>
                 </select>
               </div>
 
@@ -608,7 +609,6 @@ export default function RecipeDetailPage(props: PageProps) {
                   <option value="Breakfast">Breakfast</option>
                   <option value="Lunch">Lunch</option>
                   <option value="Dinner">Dinner</option>
-                  <option value="Snack">Snack</option>
                 </select>
               </div>
 
@@ -638,7 +638,6 @@ export default function RecipeDetailPage(props: PageProps) {
           </div>
         </div>
       )}
-
-    </div>
+    </>
   );
 }

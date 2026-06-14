@@ -127,11 +127,6 @@ export default function DashboardPage() {
           };
         });
         success(`Added ${amount}ml of water! 💧`);
-        // Trigger BloomScore recalculation in background
-        fetch("/api/bloom/calculate", { method: "POST" }).then(() => {
-          // Notify TopBar to fetch live BloomScore
-          window.dispatchEvent(new Event("bloomRecalculated"));
-        });
       } else {
         error("Failed to log water.");
       }
@@ -230,8 +225,8 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      {/* Row 2: Stats Bar (4 cards) */}
-      <div className="grid-4">
+      {/* Row 2: Stats Bar (3 cards) */}
+      <div className="grid-3">
         {/* Calories Card */}
         <div className="glass-card" style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: "16px" }}>
           <div style={{ padding: "10px", borderRadius: "var(--radius-md)", background: "rgba(245, 158, 11, 0.15)" }}>
@@ -267,19 +262,6 @@ export default function DashboardPage() {
             <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 500 }}>Water Hydration</span>
             <div style={{ fontSize: "22px", fontWeight: 800, color: "var(--text-primary)", marginTop: "2px" }}>
               {waterAmount}ml <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>/ {goals.waterTargetMl}ml</span>
-            </div>
-          </div>
-        </div>
-
-        {/* BloomScore Card */}
-        <div className="glass-card" style={{ padding: "16px 20px", display: "flex", alignItems: "center", gap: "16px" }}>
-          <div style={{ padding: "10px", borderRadius: "var(--radius-md)", background: "rgba(16, 185, 129, 0.15)" }}>
-            <TrendingUp size={20} style={{ color: "var(--primary)" }} />
-          </div>
-          <div>
-            <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 500 }}>BloomScore</span>
-            <div style={{ fontSize: "22px", fontWeight: 800, color: "var(--text-primary)", marginTop: "2px" }}>
-              {data?.bloomScore || 75}% <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Weekly Adherence</span>
             </div>
           </div>
         </div>
@@ -426,7 +408,7 @@ export default function DashboardPage() {
             </div>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", flex: 1 }}>
-              {["breakfast", "lunch", "dinner", "snack"].map((mealType) => {
+              {["breakfast", "lunch", "dinner"].map((mealType) => {
                 const foundMeal = data?.meals.find(
                   (m) => m.mealType.toLowerCase() === mealType.toLowerCase()
                 );
@@ -434,7 +416,6 @@ export default function DashboardPage() {
                   breakfast: "var(--cyan)",
                   lunch: "var(--primary)",
                   dinner: "var(--purple)",
-                  snack: "var(--pink)",
                 };
                 const mealColor = colorMap[mealType];
 
