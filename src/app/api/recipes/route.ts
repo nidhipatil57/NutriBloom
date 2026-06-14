@@ -20,7 +20,105 @@ export async function GET(req: Request) {
     const limit = 9;
     const skip = (page - 1) * limit;
 
-    // Filter query
+    const apiKey = process.env.SPOONACULAR_API_KEY;
+    const hasSpoonacular = apiKey && apiKey !== "your-spoonacular-api-key-here";
+
+    // ── SPOONACULAR API CACHING PROXY ──
+    if (hasSpoonacular && (q || cuisine || diet)) {
+      try {
+        const spoonUrl = new URL("https://api.spoonacular.com/recipes/complexSearch");
+        spoonUrl.searchParams.append("apiKey", apiKey);
+        spoonUrl.searchParams.append("addRecipeInformation", "true");
+        spoonUrl.searchParams.append("addRecipeNutrition", "true");
+        spoonUrl.searchParams.append("fillIngredients", "true");
+        spoonUrl.searchParams.append("number", "15"); // fetch candidates to cache
+
+        if (q) spoonUrl.searchParams.append("query", q);
+        if (cuisine) spoonUrl.searchParams.append("cuisine", cuisine);
+        if (diet) spoonUrl.searchParams.append("diet", diet);
+
+        const response = await fetch(spoonUrl.toString());
+
+        if (response.ok) {
+          const data = await response.json();
+          const results = data.results || [];
+
+          for (const recipe of results) {
+            // Verify if recipe already cached in DB
+            const existing = await prisma.recipe.findUnique({
+              where: { spoonacularId: recipe.id },
+            });
+
+            if (!existing) {
+              const nutrients = recipe.nutrition?.nutrients || [];
+              const getNutrient = (name: string) =>
+                nutrients.find((n: any) => n.name.toLowerCase() === name.toLowerCase())?.amount || 0;
+
+              const calories = getNutrient("calories");
+              const protein = getNutrient("protein");
+              const carbs = getNutrient("carbohydrates");
+              const fat = getNutrient("fat");
+              const fiber = getNutrient("fiber");
+              const sugar = getNutrient("sugar");
+
+              // Format clean step-by-step instructions
+              const rawInstructions = recipe.instructions || recipe.analyzedInstructions?.[0]?.steps?.map((s: any) => `${s.number}. ${s.step}`).join("\n") || "Plate and enjoy.";
+
+              const created = await prisma.recipe.create({
+                data: {
+                  spoonacularId: recipe.id,
+                  title: recipe.title,
+                  image: recipe.image || null,
+                  summary: recipe.summary || "",
+                  instructions: rawInstructions,
+                  servings: recipe.servings || 1,
+                  readyInMinutes: recipe.readyInMinutes || 30,
+                  cuisines: JSON.stringify(recipe.cuisines || []),
+                  diets: JSON.stringify(recipe.diets || []),
+                  tags: JSON.stringify(recipe.dishTypes || []),
+                  sourceUrl: recipe.sourceUrl || null,
+                  calories,
+                  protein,
+                  carbs,
+                  fat,
+                  fiber,
+                  sugar,
+                  isCustom: false,
+                },
+              });
+
+              // Create ingredient records and links
+              if (recipe.extendedIngredients && Array.isArray(recipe.extendedIngredients)) {
+                for (const ing of recipe.extendedIngredients) {
+                  if (!ing.name) continue;
+                  const ingName = ing.name.trim().toLowerCase();
+
+                  const dbIngredient = await prisma.ingredient.upsert({
+                    where: { name: ingName },
+                    update: { aisle: ing.aisle || "Other" },
+                    create: { name: ingName, aisle: ing.aisle || "Other" },
+                  });
+
+                  await prisma.recipeIngredient.create({
+                    data: {
+                      recipeId: created.id,
+                      ingredientId: dbIngredient.id,
+                      amount: ing.amount || 1,
+                      unit: ing.unit || "",
+                      original: ing.original || `${ing.amount} ${ing.unit} ${ing.name}`,
+                    },
+                  });
+                }
+              }
+            }
+          }
+        }
+      } catch (spoonErr) {
+        console.error("Spoonacular API proxy failure, falling back to local DB cache:", spoonErr);
+      }
+    }
+
+    // ── LOCAL DB QUERY ──
     const where: any = {};
     if (q) {
       where.title = { contains: q };
@@ -43,7 +141,7 @@ export async function GET(req: Request) {
       },
     });
 
-    // Post-filtering for cuisines & diets stored as JSON strings
+    // Filter cuisines & diets stored as stringified arrays
     if (cuisine) {
       recipes = recipes.filter((r) => {
         try {
@@ -66,11 +164,11 @@ export async function GET(req: Request) {
       });
     }
 
-    // Interleave Veg and Non-Veg recipes
+    // Interleave Veg/Non-Veg
     const veg = recipes.filter((r) => {
       try {
-        const diets = JSON.parse(r.diets || "[]").map((d: string) => d.toLowerCase());
-        return diets.includes("vegetarian") || diets.includes("vegan");
+        const dietsArr = JSON.parse(r.diets || "[]").map((d: string) => d.toLowerCase());
+        return dietsArr.includes("vegetarian") || dietsArr.includes("vegan");
       } catch {
         return false;
       }
@@ -78,10 +176,10 @@ export async function GET(req: Request) {
 
     const nonVeg = recipes.filter((r) => {
       try {
-        const diets = JSON.parse(r.diets || "[]").map((d: string) => d.toLowerCase());
-        return !diets.includes("vegetarian") && !diets.includes("vegan");
+        const dietsArr = JSON.parse(r.diets || "[]").map((d: string) => d.toLowerCase());
+        return !dietsArr.includes("vegetarian") && !dietsArr.includes("vegan");
       } catch {
-        return true; // default to non-veg if parsing fails
+        return true;
       }
     });
 
