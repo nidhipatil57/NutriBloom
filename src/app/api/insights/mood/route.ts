@@ -27,7 +27,7 @@ export async function GET() {
     });
 
     const apiKey = process.env.GEMINI_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("gemini-placeholder") || (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ."));
 
     if (isApiKeyPlaceholder) {
       // ── SMART FALLBACK INSIGHTS ──
@@ -44,7 +44,7 @@ export async function GET() {
       return NextResponse.json({ insights });
     }
 
-    // ── CALL GEMINI API ──
+    // ── CALL GOOGLE GEMINI API (Gemini 2.5 Flash) ──
     const prompt = `Analyze the correlation between this user's mood/energy levels and their nutrition.
     Nutrition Logs (past 30 days):
     ${JSON.stringify(nutritionLogs.map((n) => ({ date: n.date, calories: n.totalCalories, protein: n.totalProtein })))}
@@ -57,20 +57,21 @@ export async function GET() {
       "insight 1",
       "insight 2"
     ]
-    Return ONLY the raw JSON. No markdown formatting.`;
+    Return ONLY the raw JSON.`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          responseMimeType: "application/json",
         },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: prompt }] }],
-        }),
-      }
-    );
+      }),
+    });
 
     if (response.ok) {
       const resJson = await response.json();

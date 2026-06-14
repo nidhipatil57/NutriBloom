@@ -69,7 +69,7 @@ export async function POST(req: Request) {
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("gemini-placeholder") || (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ."));
 
     const plannedList: any[] = [];
 
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
       // ── SMART FALLBACK RECOMMENDATION ALGORITHM ──
       // Populate dates one by one with randomized selections matching their targets
       for (const dStr of dateStrings) {
-        const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snack"];
+        const mealTypes = ["Breakfast", "Lunch", "Dinner"];
         for (const type of mealTypes) {
           // Select recipe (prefer saved recipes if they match)
           let candidates = filteredRecipes;
@@ -126,23 +126,23 @@ export async function POST(req: Request) {
       
       Return ONLY a JSON array of objects structured as:
       [
-        { "date": "YYYY-MM-DD", "mealType": "Breakfast"|"Lunch"|"Dinner"|"Snack", "recipeId": "string" }
-      ]
-      No markdown formatting, no comments, just the raw JSON.`;
+        { "date": "YYYY-MM-DD", "mealType": "Breakfast"|"Lunch"|"Dinner", "recipeId": "string" }
+      ]`;
 
       try {
-        const response = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: systemPrompt }] }],
+            generationConfig: {
+              responseMimeType: "application/json",
             },
-            body: JSON.stringify({
-              contents: [{ role: "user", parts: [{ text: systemPrompt }] }],
-            }),
-          }
-        );
+          }),
+        });
 
         if (response.ok) {
           const resJson = await response.json();
@@ -176,7 +176,7 @@ export async function POST(req: Request) {
         console.error("Gemini Autopilot error, falling back to smart recommendation:", err);
         // Fallback to randomized
         for (const dStr of dateStrings) {
-          for (const type of ["Breakfast", "Lunch", "Dinner", "Snack"]) {
+          for (const type of ["Breakfast", "Lunch", "Dinner"]) {
             const recipe = filteredRecipes[Math.floor(Math.random() * filteredRecipes.length)];
             const planned = await prisma.plannedMeal.create({
               data: {

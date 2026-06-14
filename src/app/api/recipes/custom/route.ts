@@ -43,6 +43,8 @@ export async function POST(req: Request) {
 
     const {
       title,
+      summary,
+      instructions,
       servings,
       readyInMinutes,
       ingredients, // Array of { name, amount, unit, calories, protein, carbs, fat }
@@ -71,6 +73,8 @@ export async function POST(req: Request) {
       const r = await tx.recipe.create({
         data: {
           title,
+          summary: summary || "Custom recipe created by user.",
+          instructions: instructions || "Custom recipe created by user.",
           servings: Number(servings) || 4,
           readyInMinutes: Number(readyInMinutes) || 30,
           calories: totalCalories,
@@ -80,7 +84,6 @@ export async function POST(req: Request) {
           isCustom: true,
           createdBy: userId,
           image: null,
-          instructions: "Custom recipe created by user.",
         },
       });
 

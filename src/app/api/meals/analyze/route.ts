@@ -15,7 +15,7 @@ export async function POST(req: Request) {
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("gemini-placeholder") || (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ."));
 
     if (isApiKeyPlaceholder) {
       // ── SMART MOCK MEAL ANALYSIS FALLBACK ──
@@ -36,22 +36,27 @@ export async function POST(req: Request) {
       return NextResponse.json(mockResult);
     }
 
-    // ── CALL GEMINI 1.5 FLASH VISION API ──
+    // ── CALL GOOGLE GEMINI VISION API (Gemini 2.5 Flash) ──
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `Analyze this meal photo. Return ONLY a JSON object:
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                inlineData: {
+                  mimeType: mimeType || "image/jpeg",
+                  data: base64Data,
+                },
+              },
+              {
+                text: `Analyze this meal photo. Return ONLY a JSON object:
 {
   "name": "specific meal description",
   "confidence": "low"|"medium"|"high",
@@ -62,20 +67,16 @@ export async function POST(req: Request) {
   "fiber": number,
   "notes": "brief note about assumptions"
 }
-All nutrients in grams (calories in kcal), for the full meal shown. Do not return markdown, do not write anything else. Just the raw JSON.`,
-                },
-                {
-                  inlineData: {
-                    mimeType: mimeType || "image/jpeg",
-                    data: base64Data,
-                  },
-                },
-              ],
-            },
-          ],
-        }),
-      }
-    );
+All nutrients in grams (calories in kcal), for the full meal shown.`,
+              },
+            ],
+          },
+        ],
+        generationConfig: {
+          responseMimeType: "application/json",
+        },
+      }),
+    });
 
     if (response.ok) {
       const resJson = await response.json();

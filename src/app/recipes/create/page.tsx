@@ -23,6 +23,8 @@ export default function CreateRecipePage() {
 
   // Core Form Fields
   const [title, setTitle] = useState("");
+  const [summary, setSummary] = useState("");
+  const [instructions, setInstructions] = useState("");
   const [servings, setServings] = useState(4);
   const [readyInMinutes, setReadyInMinutes] = useState(30);
 
@@ -74,6 +76,14 @@ export default function CreateRecipePage() {
       error("Please enter a recipe title.");
       return;
     }
+    if (!summary.trim()) {
+      error("Please enter a recipe description.");
+      return;
+    }
+    if (!instructions.trim()) {
+      error("Please enter step-by-step instructions.");
+      return;
+    }
     const emptyIng = ingredients.some((ing) => !ing.name.trim());
     if (emptyIng) {
       error("All ingredients must have a name.");
@@ -87,6 +97,8 @@ export default function CreateRecipePage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim(),
+          summary: summary.trim(),
+          instructions: instructions.trim(),
           servings: Number(servings),
           readyInMinutes: Number(readyInMinutes),
           ingredients: ingredients.map((ing) => ({
@@ -150,6 +162,30 @@ export default function CreateRecipePage() {
                 className="input"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Detailed Description / Summary</label>
+              <textarea
+                placeholder="Write a highly detailed description about the recipe, its flavor profile, and nutritional benefits..."
+                className="input"
+                style={{ minHeight: "100px", padding: "12px", resize: "vertical", fontFamily: "inherit" }}
+                value={summary}
+                onChange={(e) => setSummary(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="input-group">
+              <label className="input-label">Step-by-Step Instructions</label>
+              <textarea
+                placeholder="Provide detailed, step-by-step instructions. Put each step on a new line (e.g.,\n1. Preheat oven to 400°F...\n2. Slice the avocados...)"
+                className="input"
+                style={{ minHeight: "150px", padding: "12px", resize: "vertical", fontFamily: "inherit" }}
+                value={instructions}
+                onChange={(e) => setInstructions(e.target.value)}
                 required
               />
             </div>

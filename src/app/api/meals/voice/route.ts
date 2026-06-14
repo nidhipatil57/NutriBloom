@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("gemini-placeholder") || (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ."));
 
     if (isApiKeyPlaceholder) {
       // ── LOCAL REGEX KEYWORD MATCHER FALLBACK ──
@@ -63,27 +63,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ name, calories, protein, carbs, fat });
     }
 
-    // ── CALL GEMINI API ──
+    // ── CALL GOOGLE GEMINI API (Gemini 2.5 Flash) ──
     const systemPrompt = `You are a nutrition extraction assistant. Given a user's spoken description of what they ate, 
-    extract the meal information. Return ONLY a JSON object with no extra text and no markdown backticks:
+    extract the meal information. Return ONLY a JSON object:
     { "name": string, "calories": number, "protein": number, "carbs": number, "fat": number }
     Base estimates on standard serving sizes. If unclear, estimate conservatively.`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: `Input: "${transcript}"` }] }],
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        generationConfig: {
+          responseMimeType: "application/json",
         },
-        body: JSON.stringify({
-          contents: [{ role: "user", parts: [{ text: `Input: "${transcript}"` }] }],
-          systemInstruction: {
-            parts: [{ text: systemPrompt }],
-          },
-        }),
-      }
-    );
+      }),
+    });
 
     if (response.ok) {
       const resJson = await response.json();

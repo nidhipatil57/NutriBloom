@@ -37,7 +37,6 @@ export default function SettingsPage() {
 
   // Notifications
   const [mealReminders, setMealReminders] = useState(true);
-  const [weeklyBloomScore, setWeeklyBloomScore] = useState(true);
   const [achievementUnlocks, setAchievementUnlocks] = useState(true);
 
   // Delete Modal
@@ -134,10 +133,6 @@ export default function SettingsPage() {
       if (res.ok) {
         success("Settings updated successfully!");
         update(); // Update session state
-        // Recalculate BloomScore in case goals changed
-        fetch("/api/bloom/calculate", { method: "POST" }).then(() => {
-          window.dispatchEvent(new Event("bloomRecalculated"));
-        });
       } else {
         const data = await res.json();
         error(data.error || "Failed to update settings.");
@@ -211,7 +206,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="fade-in">
+    <>
+      <div style={{ display: "flex", flexDirection: "column", gap: "24px" }} className="fade-in">
       {/* Save Floating Bar */}
       <div
         className="glass-card"
@@ -540,41 +536,6 @@ export default function SettingsPage() {
 
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                 <div style={{ display: "flex", flexDirection: "column" }}>
-                  <span style={{ fontSize: "14px", fontWeight: 600 }}>Weekly BloomScore Summary</span>
-                  <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Receive emails with your weekly adherence scores</span>
-                </div>
-                <label style={{ position: "relative", display: "inline-block", width: "44px", height: "24px", cursor: "pointer" }}>
-                  <input type="checkbox" checked={weeklyBloomScore} onChange={() => setWeeklyBloomScore(!weeklyBloomScore)} style={{ opacity: 0, width: 0, height: 0 }} />
-                  <span
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      backgroundColor: weeklyBloomScore ? "var(--primary)" : "rgba(148, 163, 184, 0.1)",
-                      borderRadius: "24px",
-                      transition: "0.2s",
-                    }}
-                  />
-                  <span
-                    style={{
-                      position: "absolute",
-                      content: '""',
-                      height: "18px",
-                      width: "18px",
-                      left: weeklyBloomScore ? "22px" : "3px",
-                      bottom: "3px",
-                      backgroundColor: "#f1f5f9",
-                      borderRadius: "50%",
-                      transition: "0.2s",
-                    }}
-                  />
-                </label>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                <div style={{ display: "flex", flexDirection: "column" }}>
                   <span style={{ fontSize: "14px", fontWeight: 600 }}>Achievements & Badges</span>
                   <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>Notify you instantly when new milestones are reached</span>
                 </div>
@@ -623,6 +584,7 @@ export default function SettingsPage() {
           </div>
         </div>
       </div>
+      </div>
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
@@ -657,6 +619,6 @@ export default function SettingsPage() {
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 }

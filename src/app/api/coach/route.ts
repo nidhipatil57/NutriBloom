@@ -99,7 +99,7 @@ export async function POST(req: Request) {
     Keep responses friendly, supportive, actionable, and under 3-4 sentences. Focus on helping them hit their macronutrient splits and hydration goals. Use emojis occasionally (🌿, 💧, 💪).`;
 
     const apiKey = process.env.GEMINI_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("gemini-placeholder") || (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ."));
 
     // Save the incoming user message to the DB first
     if (messages.length > 0) {
@@ -131,34 +131,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ reply });
     }
 
-    // ── CALL GEMINI API ──
-    const geminiMessages = messages.map((m) => {
-      const role = m.role === "assistant" ? "model" : "user";
-      return {
-        role,
-        parts: [{ text: m.content }],
-      };
-    });
+    // ── CALL GOOGLE GEMINI API (Gemini 2.5 Flash) ──
+    const geminiMessages = messages.map((m) => ({
+      role: m.role === "assistant" ? "model" : "user",
+      parts: [{ text: m.content }],
+    }));
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: geminiMessages,
-          systemInstruction: {
-            parts: [{ text: systemPrompt }],
-          },
-        }),
-      }
-    );
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        contents: geminiMessages,
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+      }),
+    });
 
     if (response.ok) {
       const resJson = await response.json();
-      const reply = resJson.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't process that response.";
+      const reply = resJson.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Sorry, I couldn't process that response.";
       
       // Save assistant reply
       await saveMessageToDb("assistant", reply);
