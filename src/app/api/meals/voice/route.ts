@@ -13,8 +13,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing transcript" }, { status: 400 });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("sk-ant-api-placeholder-keys") || !apiKey.startsWith("sk-ant-");
+    const apiKey = process.env.GEMINI_API_KEY;
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
 
     if (isApiKeyPlaceholder) {
       // ── LOCAL REGEX KEYWORD MATCHER FALLBACK ──
@@ -63,35 +63,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ name, calories, protein, carbs, fat });
     }
 
-    // ── CALL ANTHROPIC CLAUDE API ──
+    // ── CALL GEMINI API ──
     const systemPrompt = `You are a nutrition extraction assistant. Given a user's spoken description of what they ate, 
     extract the meal information. Return ONLY a JSON object with no extra text and no markdown backticks:
     { "name": string, "calories": number, "protein": number, "carbs": number, "fat": number }
     Base estimates on standard serving sizes. If unclear, estimate conservatively.`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 300,
-        messages: [{ role: "user", content: `Input: "${transcript}"` }],
-        system: systemPrompt,
-      }),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: `Input: "${transcript}"` }] }],
+          systemInstruction: {
+            parts: [{ text: systemPrompt }],
+          },
+        }),
+      }
+    );
 
     if (response.ok) {
       const resJson = await response.json();
-      const textResponse = resJson.content[0].text.trim();
+      const textResponse = resJson.candidates?.[0]?.content?.parts?.[0]?.text.trim() || "";
       const cleanJson = textResponse.replace(/^```json/, "").replace(/```$/, "").trim();
       const parsed = JSON.parse(cleanJson);
       return NextResponse.json(parsed);
     } else {
-      throw new Error("Claude API request failed");
+      throw new Error("Gemini API request failed");
     }
   } catch (err) {
     console.error("Voice Log API error:", err);

@@ -10,7 +10,11 @@ import {
   Plus, 
   User, 
   Clock,
-  RefreshCw
+  RefreshCw,
+  Edit2,
+  Trash2,
+  Check,
+  X
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 
@@ -22,75 +26,79 @@ interface Message {
 interface ChatSession {
   id: string;
   title: string;
-  timestamp: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
   messages: Message[];
 }
 
 export default function FullCoachPage() {
-  const { error } = useToast();
+  const { success, error } = useToast();
   
-  // Mock Chat Sessions history list
-  const [sessions, setSessions] = useState<ChatSession[]>([
-    {
-      id: "session-1",
-      title: "Nutrition Audit",
-      timestamp: "Today, 10:14 AM",
-      messages: [
-        {
-          role: "assistant",
-          content: "Hi! I'm your NutriBloom Coach 🌿 I have compiled your settings and logged foods. Let's audit your targets and get you back on track!",
-        },
-      ],
-    },
-    {
-      id: "session-2",
-      title: "Protein Optimization",
-      timestamp: "Yesterday, 2:40 PM",
-      messages: [
-        {
-          role: "assistant",
-          content: "Increasing your protein intake can help preserve muscle and optimize recovery. Would you like to review some high-protein breakfast recommendations?",
-        },
-        {
-          role: "user",
-          content: "Yes please. Show me a quick meal prep idea.",
-        },
-        {
-          role: "assistant",
-          content: "A Greek Yogurt Parfait or a Berry Protein Smoothie is perfect. Both yield over 30g of protein and can be prepped in under 5 minutes!",
-        },
-      ],
-    },
-    {
-      id: "session-3",
-      title: "Hydration Strategy",
-      timestamp: "June 12, 11:05 AM",
-      messages: [
-        {
-          role: "assistant",
-          content: "Water is the catalyst of metabolism. Let's set some reminders to make sure you exceed your 2500ml target today.",
-        },
-      ],
-    },
-  ]);
-
-  const [activeSessionId, setActiveSessionId] = useState("session-1");
+  const [sessions, setSessions] = useState<ChatSession[]>([]);
+  const [activeSessionId, setActiveSessionId] = useState<string>("");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  const [editingSessionId, setEditingSessionId] = useState<string>("");
+  const [renameValue, setRenameValue] = useState<string>("");
+  const [hoveredSessionId, setHoveredSessionId] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const activeSession = sessions.find((s) => s.id === activeSessionId) || sessions[0];
+  const activeMessages = activeSession?.messages || [];
+  const activeTitle = activeSession?.title || "New AI Coaching Session";
+
+  const formatTimestamp = (dateStr?: string | Date) => {
+    if (!dateStr) return "Just now";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  };
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
+  // Fetch sessions from the backend DB on mount
+  useEffect(() => {
+    const loadSessions = async () => {
+      try {
+        const res = await fetch("/api/coach/sessions");
+        if (res.ok) {
+          const data = await res.json();
+          if (data.sessions && data.sessions.length > 0) {
+            setSessions(data.sessions);
+            setActiveSessionId(data.sessions[0].id);
+          } else {
+            // Automatically create a default session in DB if none exist
+            const createRes = await fetch("/api/coach/sessions", { method: "POST" });
+            if (createRes.ok) {
+              const createData = await createRes.json();
+              setSessions([createData.session]);
+              setActiveSessionId(createData.session.id);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load chat sessions:", err);
+      } finally {
+        setIsPageLoading(false);
+      }
+    };
+
+    loadSessions();
+  }, []);
+
   useEffect(() => {
     scrollToBottom();
-  }, [activeSession.messages, isLoading]);
+  }, [activeMessages, isLoading]);
 
   const handleSend = async (text: string) => {
-    if (!text.trim() || isLoading) return;
+    if (!text.trim() || isLoading || !activeSessionId) return;
 
     // Create user message
     const userMsg: Message = { role: "user", content: text };
@@ -99,8 +107,12 @@ export default function FullCoachPage() {
     setSessions((prev) =>
       prev.map((s) => {
         if (s.id === activeSessionId) {
+          const updatedTitle = s.title === "New AI Coaching Session"
+            ? (text.length > 30 ? text.substring(0, 27) + "..." : text)
+            : s.title;
           return {
             ...s,
+            title: updatedTitle,
             messages: [...s.messages, userMsg],
           };
         }
@@ -112,11 +124,14 @@ export default function FullCoachPage() {
     setIsLoading(true);
 
     try {
-      const chatHistory = [...activeSession.messages, userMsg];
+      const chatHistory = [...activeMessages, userMsg];
       const res = await fetch("/api/coach", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: chatHistory }),
+        body: JSON.stringify({ 
+          sessionId: activeSessionId,
+          messages: chatHistory 
+        }),
       });
 
       if (res.ok) {
@@ -159,21 +174,80 @@ export default function FullCoachPage() {
     }
   };
 
-  const handleCreateNewSession = () => {
-    const id = `session-${Date.now()}`;
-    const newSession: ChatSession = {
-      id,
-      title: "New AI Coaching Session",
-      timestamp: "Just now",
-      messages: [
-        {
-          role: "assistant",
-          content: "Welcome to a fresh coaching log! I'm ready to evaluate your nutrition stats and answer fitness questions. How can I help you bloom?",
-        },
-      ],
-    };
-    setSessions((prev) => [newSession, ...prev]);
-    setActiveSessionId(id);
+  const handleCreateNewSession = async () => {
+    setIsLoading(true);
+    try {
+      const res = await fetch("/api/coach/sessions", {
+        method: "POST",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSessions((prev) => [data.session, ...prev]);
+        setActiveSessionId(data.session.id);
+      } else {
+        error("Failed to create new session.");
+      }
+    } catch (err) {
+      console.error(err);
+      error("Failed to create new session.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRename = async (sessionId: string, newTitle: string) => {
+    if (!newTitle.trim()) return;
+    try {
+      const res = await fetch(`/api/coach/sessions/${sessionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newTitle }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSessions((prev) =>
+          prev.map((s) => (s.id === sessionId ? { ...s, title: data.session.title } : s))
+        );
+        setEditingSessionId("");
+        success("Discussion renamed successfully.");
+      } else {
+        error("Failed to rename discussion.");
+      }
+    } catch (err) {
+      console.error(err);
+      error("Error renaming discussion.");
+    }
+  };
+
+  const handleDelete = async (sessionId: string) => {
+    if (!confirm("Are you sure you want to delete this coaching discussion?")) return;
+    try {
+      const res = await fetch(`/api/coach/sessions/${sessionId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+        if (activeSessionId === sessionId) {
+          const remaining = sessions.filter((s) => s.id !== sessionId);
+          if (remaining.length > 0) {
+            setActiveSessionId(remaining[0].id);
+          } else {
+            const createRes = await fetch("/api/coach/sessions", { method: "POST" });
+            if (createRes.ok) {
+              const createData = await createRes.json();
+              setSessions([createData.session]);
+              setActiveSessionId(createData.session.id);
+            }
+          }
+        }
+        success("Discussion deleted successfully.");
+      } else {
+        error("Failed to delete discussion.");
+      }
+    } catch (err) {
+      console.error(err);
+      error("Error deleting discussion.");
+    }
   };
 
   const suggestedPrompts = [
@@ -182,6 +256,17 @@ export default function FullCoachPage() {
     "Analyze my calorie consistency",
     "What cuisines match my preferences?"
   ];
+
+  if (isPageLoading) {
+    return (
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "calc(100vh - var(--topbar-height) - 48px)" }} className="fade-in">
+        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "12px" }}>
+          <div className="spinning" style={{ width: "36px", height: "36px", borderRadius: "50%", border: "2px solid var(--primary)", borderTopColor: "transparent" }} />
+          <span style={{ fontSize: "14px", color: "var(--text-secondary)", fontWeight: 500 }}>Syncing AI Coach History...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ display: "grid", gridTemplateColumns: "260px 1fr", gap: "20px", height: "calc(100vh - var(--topbar-height) - 48px)" }} className="fade-in">
@@ -202,6 +287,7 @@ export default function FullCoachPage() {
           onClick={handleCreateNewSession}
           className="btn btn-primary"
           style={{ width: "100%", justifyContent: "center", gap: "8px" }}
+          disabled={isLoading}
         >
           <Plus size={16} />
           <span>New Session</span>
@@ -214,10 +300,22 @@ export default function FullCoachPage() {
 
           {sessions.map((session) => {
             const isActive = session.id === activeSessionId;
+            const isEditing = editingSessionId === session.id;
+            const isHovered = hoveredSessionId === session.id;
+
             return (
-              <button
+              <div
                 key={session.id}
-                onClick={() => setActiveSessionId(session.id)}
+                onClick={() => {
+                  if (!isEditing) setActiveSessionId(session.id);
+                }}
+                role="button"
+                tabIndex={0}
+                onMouseEnter={() => setHoveredSessionId(session.id)}
+                onMouseLeave={() => setHoveredSessionId("")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !isEditing) setActiveSessionId(session.id);
+                }}
                 style={{
                   display: "flex",
                   flexDirection: "column",
@@ -231,20 +329,85 @@ export default function FullCoachPage() {
                   textAlign: "left",
                   cursor: "pointer",
                   transition: "all var(--transition)",
-                  width: "100%"
+                  width: "100%",
+                  outline: "none"
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
-                  <MessageSquare size={14} style={{ color: isActive ? "var(--primary)" : "var(--text-muted)" }} />
-                  <span style={{ fontSize: "13px", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-                    {session.title}
-                  </span>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
+                    <MessageSquare size={14} style={{ color: isActive ? "var(--primary)" : "var(--text-muted)", flexShrink: 0 }} />
+                    
+                    {isEditing ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "4px", width: "100%" }} onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="text"
+                          value={renameValue}
+                          onChange={(e) => setRenameValue(e.target.value)}
+                          className="input"
+                          style={{ fontSize: "12px", height: "24px", padding: "2px 6px", background: "rgba(3, 7, 18, 0.6)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: "var(--text-primary)", width: "100%" }}
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleRename(session.id, renameValue);
+                            if (e.key === "Escape") setEditingSessionId("");
+                          }}
+                        />
+                        <button
+                          onClick={() => handleRename(session.id, renameValue)}
+                          className="btn btn-ghost btn-sm"
+                          style={{ padding: 0, width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                          title="Save"
+                        >
+                          <Check size={12} style={{ color: "var(--primary)" }} />
+                        </button>
+                        <button
+                          onClick={() => setEditingSessionId("")}
+                          className="btn btn-ghost btn-sm"
+                          style={{ padding: 0, width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                          title="Cancel"
+                        >
+                          <X size={12} style={{ color: "var(--danger)" }} />
+                        </button>
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: "13px", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                        {session.title}
+                      </span>
+                    )}
+                  </div>
+
+                  {!isEditing && (isActive || isHovered) && (
+                    <div style={{ display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingSessionId(session.id);
+                          setRenameValue(session.title);
+                        }}
+                        className="btn btn-ghost"
+                        style={{ padding: 0, width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", minWidth: "auto", background: "transparent", border: "none" }}
+                        title="Rename Chat"
+                      >
+                        <Edit2 size={11} style={{ color: "var(--text-secondary)" }} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(session.id);
+                        }}
+                        className="btn btn-ghost"
+                        style={{ padding: 0, width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", minWidth: "auto", background: "transparent", border: "none" }}
+                        title="Delete Chat"
+                      >
+                        <Trash2 size={11} style={{ color: "var(--danger)" }} />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-muted)", fontSize: "10px", paddingLeft: "22px" }}>
                   <Clock size={10} />
-                  <span>{session.timestamp}</span>
+                  <span>{formatTimestamp(session.updatedAt || session.createdAt)}</span>
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
@@ -276,7 +439,7 @@ export default function FullCoachPage() {
               <Leaf size={18} style={{ color: "var(--primary-light)" }} />
             </div>
             <div>
-              <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{activeSession.title}</h3>
+              <h3 style={{ fontSize: "14px", fontWeight: 800 }}>{activeTitle}</h3>
               <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
                 <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "var(--primary)", boxShadow: "0 0 8px var(--primary)" }} />
                 <span style={{ fontSize: "10px", color: "var(--text-secondary)" }}>Interactive Coaching Engine</span>
@@ -297,7 +460,7 @@ export default function FullCoachPage() {
             background: "rgba(3, 7, 18, 0.15)"
           }}
         >
-          {activeSession.messages.map((msg, idx) => {
+          {activeMessages.map((msg, idx) => {
             const isUser = msg.role === "user";
             return (
               <div 
@@ -370,7 +533,7 @@ export default function FullCoachPage() {
           )}
 
           {/* Suggestion prompt pills */}
-          {activeSession.messages.length === 1 && !isLoading && (
+          {activeMessages.length === 1 && !isLoading && (
             <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "12px", paddingLeft: "44px" }}>
               <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                 Suggested Prompts
@@ -419,7 +582,7 @@ export default function FullCoachPage() {
             type="submit"
             className="btn btn-primary"
             style={{ width: "46px", height: "46px", padding: 0, justifyContent: "center", borderRadius: "var(--radius-md)" }}
-            disabled={!input.trim() || isLoading}
+            disabled={!input.trim() || isLoading || !activeSessionId}
           >
             <Send size={18} />
           </button>
