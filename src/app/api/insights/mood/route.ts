@@ -26,8 +26,8 @@ export async function GET() {
       where: { userId, date: { in: dates } },
     });
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("sk-ant-api-placeholder-keys") || !apiKey.startsWith("sk-ant-");
+    const apiKey = process.env.GEMINI_API_KEY;
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
 
     if (isApiKeyPlaceholder) {
       // ── SMART FALLBACK INSIGHTS ──
@@ -44,7 +44,7 @@ export async function GET() {
       return NextResponse.json({ insights });
     }
 
-    // ── CALL ANTHROPIC CLAUDE API ──
+    // ── CALL GEMINI API ──
     const prompt = `Analyze the correlation between this user's mood/energy levels and their nutrition.
     Nutrition Logs (past 30 days):
     ${JSON.stringify(nutritionLogs.map((n) => ({ date: n.date, calories: n.totalCalories, protein: n.totalProtein })))}
@@ -59,28 +59,27 @@ export async function GET() {
     ]
     Return ONLY the raw JSON. No markdown formatting.`;
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 600,
-        messages: [{ role: "user", content: prompt }],
-      }),
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [{ role: "user", parts: [{ text: prompt }] }],
+        }),
+      }
+    );
 
     if (response.ok) {
       const resJson = await response.json();
-      const text = resJson.content[0].text.trim();
+      const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text.trim() || "";
       const cleanJson = text.replace(/^```json/, "").replace(/```$/, "").trim();
       const insights = JSON.parse(cleanJson);
       return NextResponse.json({ insights });
     } else {
-      throw new Error("Claude API request failed");
+      throw new Error("Gemini API request failed");
     }
   } catch (err) {
     console.error("Mood insights error:", err);

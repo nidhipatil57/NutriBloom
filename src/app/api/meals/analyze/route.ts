@@ -14,8 +14,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing imageBase64 data" }, { status: 400 });
     }
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("sk-ant-api-placeholder-keys") || !apiKey.startsWith("sk-ant-");
+    const apiKey = process.env.GEMINI_API_KEY;
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
 
     if (isApiKeyPlaceholder) {
       // ── SMART MOCK MEAL ANALYSIS FALLBACK ──
@@ -36,35 +36,22 @@ export async function POST(req: Request) {
       return NextResponse.json(mockResult);
     }
 
-    // ── CALL ANTHROPIC CLAUDE VISION API ──
-    // Strip headers out of base64 if present
+    // ── CALL GEMINI 1.5 FLASH VISION API ──
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
 
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 1000,
-        messages: [
-          {
-            role: "user",
-            content: [
-              {
-                type: "image",
-                source: {
-                  type: "base64",
-                  media_type: mimeType || "image/jpeg",
-                  data: base64Data,
-                },
-              },
-              {
-                type: "text",
-                text: `Analyze this meal photo. Return ONLY a JSON object:
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `Analyze this meal photo. Return ONLY a JSON object:
 {
   "name": "specific meal description",
   "confidence": "low"|"medium"|"high",
@@ -76,23 +63,30 @@ export async function POST(req: Request) {
   "notes": "brief note about assumptions"
 }
 All nutrients in grams (calories in kcal), for the full meal shown. Do not return markdown, do not write anything else. Just the raw JSON.`,
-              },
-            ],
-          },
-        ],
-      }),
-    });
+                },
+                {
+                  inlineData: {
+                    mimeType: mimeType || "image/jpeg",
+                    data: base64Data,
+                  },
+                },
+              ],
+            },
+          ],
+        }),
+      }
+    );
 
     if (response.ok) {
       const resJson = await response.json();
-      const textResponse = resJson.content[0].text.trim();
+      const textResponse = resJson.candidates?.[0]?.content?.parts?.[0]?.text.trim() || "";
       const cleanJson = textResponse.replace(/^```json/, "").replace(/```$/, "").trim();
       const parsedResult = JSON.parse(cleanJson);
       return NextResponse.json(parsedResult);
     } else {
       const errText = await response.text();
-      console.error("Claude Vision error response:", errText);
-      throw new Error("Claude Vision API request failed");
+      console.error("Gemini Vision error response:", errText);
+      throw new Error("Gemini Vision API request failed");
     }
   } catch (err) {
     console.error("Meal analysis API POST error:", err);

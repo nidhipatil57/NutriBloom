@@ -9,11 +9,46 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = (session.user as any).id;
-    const { messages } = await req.json();
+    const { messages, sessionId } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: "Messages array required" }, { status: 400 });
     }
+
+    // Helper to save messages to DB if a valid sessionId exists
+    const saveMessageToDb = async (role: "user" | "assistant", content: string) => {
+      if (!sessionId || sessionId.startsWith("session-")) return;
+      try {
+        const dbSession = await prisma.chatSession.findUnique({ where: { id: sessionId } });
+        if (dbSession) {
+          await prisma.chatMessage.create({
+            data: {
+              sessionId,
+              role,
+              content,
+            },
+          });
+          
+          // Update title if it's default and it's a user message
+          if (role === "user" && dbSession.title === "New AI Coaching Session") {
+            const summaryTitle = content.length > 30 
+              ? content.substring(0, 27) + "..." 
+              : content;
+            await prisma.chatSession.update({
+              where: { id: sessionId },
+              data: { title: summaryTitle, updatedAt: new Date() },
+            });
+          } else {
+            await prisma.chatSession.update({
+              where: { id: sessionId },
+              data: { updatedAt: new Date() },
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error saving message to DB:", err);
+      }
+    };
 
     // 1. Fetch user data for the system prompt context
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -63,8 +98,13 @@ export async function POST(req: Request) {
     
     Keep responses friendly, supportive, actionable, and under 3-4 sentences. Focus on helping them hit their macronutrient splits and hydration goals. Use emojis occasionally (🌿, 💧, 💪).`;
 
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("sk-ant-api-placeholder-keys") || !apiKey.startsWith("sk-ant-");
+    const apiKey = process.env.GEMINI_API_KEY;
+    const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("your-gemini-api-key") || apiKey === "";
+
+    // Save the incoming user message to the DB first
+    if (messages.length > 0) {
+      await saveMessageToDb("user", messages[messages.length - 1].content);
+    }
 
     if (isApiKeyPlaceholder) {
       // ── SMART MOCK COACH RESPONSE FALLBACK ──
@@ -81,48 +121,57 @@ export async function POST(req: Request) {
       } else if (lastUserMessage.includes("snack") || lastUserMessage.includes("protein")) {
         reply = `To hit your ${proteinTarget}g protein goal, try snacking on Greek yogurt with chia seeds, a handful of almonds, or a couple of hard-boiled eggs. These options provide clean protein with healthy fats! 🥩`;
       } else {
-        reply = `Hi ${name}! Looking at your logs, you've hit ${calPct}% of your daily calorie target. Let me know if you want meal suggestions, high-protein snack ideas, or tips to hit your weekly targets! 🌿`;
+        // Dynamic smart response fallback based on user input
+        reply = `Hi ${name}! I see you're asking about "${lastUserMessage}". Looking at your logs today, you've hit ${calPct}% of your calorie goal (${Math.round(totalCalories)} kcal). Let me know how I can guide you on macros or meals! 🌿`;
       }
+
+      // Save assistant reply
+      await saveMessageToDb("assistant", reply);
 
       return NextResponse.json({ reply });
     }
 
-    // ── CALL ANTHROPIC CLAUDE API ──
-    const messagesBody = [
-      { role: "user", content: systemPrompt },
-      ...messages.map((m) => ({
-        role: m.role,
-        content: m.content,
-      })),
-    ];
-
-    const response = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "x-api-key": apiKey,
-        "anthropic-version": "2023-06-01",
-        "content-type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "claude-3-5-sonnet-20241022",
-        max_tokens: 400,
-        messages: messages.map((m) => ({
-          role: m.role,
-          content: m.content,
-        })),
-        system: systemPrompt,
-      }),
+    // ── CALL GEMINI API ──
+    const geminiMessages = messages.map((m) => {
+      const role = m.role === "assistant" ? "model" : "user";
+      return {
+        role,
+        parts: [{ text: m.content }],
+      };
     });
+
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: geminiMessages,
+          systemInstruction: {
+            parts: [{ text: systemPrompt }],
+          },
+        }),
+      }
+    );
 
     if (response.ok) {
       const resJson = await response.json();
-      const reply = resJson.content[0].text;
+      const reply = resJson.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't process that response.";
+      
+      // Save assistant reply
+      await saveMessageToDb("assistant", reply);
+
       return NextResponse.json({ reply });
     } else {
-      throw new Error("Claude API request failed");
+      const errorText = await response.text();
+      console.error("Gemini API error response:", errorText);
+      throw new Error("Gemini API request failed");
     }
   } catch (err) {
     console.error("Coach API POST error:", err);
     return NextResponse.json({ error: "Failed to generate AI response" }, { status: 500 });
   }
 }
+
