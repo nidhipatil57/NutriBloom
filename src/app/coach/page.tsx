@@ -10,7 +10,11 @@ import {
   Plus, 
   User, 
   Clock,
-  RefreshCw
+  RefreshCw,
+  Edit2,
+  Trash2,
+  Check,
+  X
 } from "lucide-react";
 import { useToast } from "@/components/ToastProvider";
 
@@ -28,13 +32,16 @@ interface ChatSession {
 }
 
 export default function FullCoachPage() {
-  const { error } = useToast();
+  const { success, error } = useToast();
   
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string>("");
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isPageLoading, setIsPageLoading] = useState(true);
+  const [editingSessionId, setEditingSessionId] = useState<string>("");
+  const [renameValue, setRenameValue] = useState<string>("");
+  const [hoveredSessionId, setHoveredSessionId] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const activeSession = sessions.find((s) => s.id === activeSessionId) || sessions[0];
@@ -188,6 +195,61 @@ export default function FullCoachPage() {
     }
   };
 
+  const handleRename = async (sessionId: string, newTitle: string) => {
+    if (!newTitle.trim()) return;
+    try {
+      const res = await fetch(`/api/coach/sessions/${sessionId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: newTitle }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setSessions((prev) =>
+          prev.map((s) => (s.id === sessionId ? { ...s, title: data.session.title } : s))
+        );
+        setEditingSessionId("");
+        success("Discussion renamed successfully.");
+      } else {
+        error("Failed to rename discussion.");
+      }
+    } catch (err) {
+      console.error(err);
+      error("Error renaming discussion.");
+    }
+  };
+
+  const handleDelete = async (sessionId: string) => {
+    if (!confirm("Are you sure you want to delete this coaching discussion?")) return;
+    try {
+      const res = await fetch(`/api/coach/sessions/${sessionId}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+        if (activeSessionId === sessionId) {
+          const remaining = sessions.filter((s) => s.id !== sessionId);
+          if (remaining.length > 0) {
+            setActiveSessionId(remaining[0].id);
+          } else {
+            const createRes = await fetch("/api/coach/sessions", { method: "POST" });
+            if (createRes.ok) {
+              const createData = await createRes.json();
+              setSessions([createData.session]);
+              setActiveSessionId(createData.session.id);
+            }
+          }
+        }
+        success("Discussion deleted successfully.");
+      } else {
+        error("Failed to delete discussion.");
+      }
+    } catch (err) {
+      console.error(err);
+      error("Error deleting discussion.");
+    }
+  };
+
   const suggestedPrompts = [
     "Am I hitting my targets today?",
     "Show me high-protein breakfast ideas",
@@ -238,10 +300,22 @@ export default function FullCoachPage() {
 
           {sessions.map((session) => {
             const isActive = session.id === activeSessionId;
+            const isEditing = editingSessionId === session.id;
+            const isHovered = hoveredSessionId === session.id;
+
             return (
-              <button
+              <div
                 key={session.id}
-                onClick={() => setActiveSessionId(session.id)}
+                onClick={() => {
+                  if (!isEditing) setActiveSessionId(session.id);
+                }}
+                role="button"
+                tabIndex={0}
+                onMouseEnter={() => setHoveredSessionId(session.id)}
+                onMouseLeave={() => setHoveredSessionId("")}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !isEditing) setActiveSessionId(session.id);
+                }}
                 style={{
                   display: "flex",
                   flexDirection: "column",
@@ -255,20 +329,85 @@ export default function FullCoachPage() {
                   textAlign: "left",
                   cursor: "pointer",
                   transition: "all var(--transition)",
-                  width: "100%"
+                  width: "100%",
+                  outline: "none"
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%" }}>
-                  <MessageSquare size={14} style={{ color: isActive ? "var(--primary)" : "var(--text-muted)" }} />
-                  <span style={{ fontSize: "13px", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-                    {session.title}
-                  </span>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", width: "100%", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", flex: 1, minWidth: 0 }}>
+                    <MessageSquare size={14} style={{ color: isActive ? "var(--primary)" : "var(--text-muted)", flexShrink: 0 }} />
+                    
+                    {isEditing ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "4px", width: "100%" }} onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="text"
+                          value={renameValue}
+                          onChange={(e) => setRenameValue(e.target.value)}
+                          className="input"
+                          style={{ fontSize: "12px", height: "24px", padding: "2px 6px", background: "rgba(3, 7, 18, 0.6)", border: "1px solid var(--border)", borderRadius: "var(--radius-sm)", color: "var(--text-primary)", width: "100%" }}
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleRename(session.id, renameValue);
+                            if (e.key === "Escape") setEditingSessionId("");
+                          }}
+                        />
+                        <button
+                          onClick={() => handleRename(session.id, renameValue)}
+                          className="btn btn-ghost btn-sm"
+                          style={{ padding: 0, width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                          title="Save"
+                        >
+                          <Check size={12} style={{ color: "var(--primary)" }} />
+                        </button>
+                        <button
+                          onClick={() => setEditingSessionId("")}
+                          className="btn btn-ghost btn-sm"
+                          style={{ padding: 0, width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center" }}
+                          title="Cancel"
+                        >
+                          <X size={12} style={{ color: "var(--danger)" }} />
+                        </button>
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: "13px", fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                        {session.title}
+                      </span>
+                    )}
+                  </div>
+
+                  {!isEditing && (isActive || isHovered) && (
+                    <div style={{ display: "flex", gap: "4px", flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setEditingSessionId(session.id);
+                          setRenameValue(session.title);
+                        }}
+                        className="btn btn-ghost"
+                        style={{ padding: 0, width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", minWidth: "auto", background: "transparent", border: "none" }}
+                        title="Rename Chat"
+                      >
+                        <Edit2 size={11} style={{ color: "var(--text-secondary)" }} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(session.id);
+                        }}
+                        className="btn btn-ghost"
+                        style={{ padding: 0, width: "20px", height: "20px", display: "flex", alignItems: "center", justifyContent: "center", minWidth: "auto", background: "transparent", border: "none" }}
+                        title="Delete Chat"
+                      >
+                        <Trash2 size={11} style={{ color: "var(--danger)" }} />
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "4px", color: "var(--text-muted)", fontSize: "10px", paddingLeft: "22px" }}>
                   <Clock size={10} />
                   <span>{formatTimestamp(session.updatedAt || session.createdAt)}</span>
                 </div>
-              </button>
+              </div>
             );
           })}
         </div>
