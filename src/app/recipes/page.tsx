@@ -361,17 +361,18 @@ export default function RecipesPage() {
           {currentList.map((recipe) => {
             const isSaved = savedIds.has(recipe.id);
             return (
-              <div 
+              <Link 
                 key={recipe.id} 
+                href={`/recipes/${recipe.id}`}
                 className="glass-card" 
                 style={{ 
                   display: "flex", 
                   flexDirection: "column", 
                   overflow: "hidden", 
                   height: "100%",
-                  cursor: "pointer"
+                  cursor: "pointer",
+                  textDecoration: "none"
                 }}
-                onClick={() => setSelectedRecipe(recipe)}
               >
                 {/* Thumbnail Block */}
                 <div style={{ 
@@ -473,6 +474,7 @@ export default function RecipesPage() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
+                      e.preventDefault();
                       setLogRecipe(recipe);
                     }}
                     className="btn btn-secondary btn-sm"
@@ -482,7 +484,7 @@ export default function RecipesPage() {
                     <ArrowRight size={12} />
                   </button>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </div>
