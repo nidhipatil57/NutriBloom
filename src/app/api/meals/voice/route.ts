@@ -63,7 +63,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ name, calories, protein, carbs, fat });
     }
 
-    // ── CALL GOOGLE GEMINI API ──
+    // ── CALL GOOGLE GEMINI API (Gemini 2.5 Flash) ──
     const systemPrompt = `You are a nutrition extraction assistant. Given a user's spoken description of what they ate, 
     extract the meal information. Return ONLY a JSON object:
     { "name": string, "calories": number, "protein": number, "carbs": number, "fat": number }
@@ -86,8 +86,9 @@ export async function POST(req: Request) {
 
     if (response.ok) {
       const resJson = await response.json();
-      const textResponse = resJson.candidates[0].content.parts[0].text.trim();
-      const parsed = JSON.parse(textResponse);
+      const textResponse = resJson.candidates?.[0]?.content?.parts?.[0]?.text.trim() || "";
+      const cleanJson = textResponse.replace(/^```json/, "").replace(/```$/, "").trim();
+      const parsed = JSON.parse(cleanJson);
       return NextResponse.json(parsed);
     } else {
       throw new Error("Gemini API request failed");

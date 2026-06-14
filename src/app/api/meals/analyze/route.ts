@@ -36,8 +36,7 @@ export async function POST(req: Request) {
       return NextResponse.json(mockResult);
     }
 
-    // ── CALL GOOGLE GEMINI VISION API ──
-    // Strip headers out of base64 if present
+    // ── CALL GOOGLE GEMINI VISION API (Gemini 2.5 Flash) ──
     const base64Data = imageBase64.replace(/^data:image\/\w+;base64,/, "");
 
     const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`;
@@ -81,8 +80,9 @@ All nutrients in grams (calories in kcal), for the full meal shown.`,
 
     if (response.ok) {
       const resJson = await response.json();
-      const textResponse = resJson.candidates[0].content.parts[0].text.trim();
-      const parsedResult = JSON.parse(textResponse);
+      const textResponse = resJson.candidates?.[0]?.content?.parts?.[0]?.text.trim() || "";
+      const cleanJson = textResponse.replace(/^```json/, "").replace(/```$/, "").trim();
+      const parsedResult = JSON.parse(cleanJson);
       return NextResponse.json(parsedResult);
     } else {
       const errText = await response.text();

@@ -146,8 +146,9 @@ export async function POST(req: Request) {
 
         if (response.ok) {
           const resJson = await response.json();
-          const responseText = resJson.candidates[0].content.parts[0].text;
-          const parsedPlan = JSON.parse(responseText.trim());
+          const responseText = resJson.candidates?.[0]?.content?.parts?.[0]?.text || "";
+          const cleanJson = responseText.trim().replace(/^```json/, "").replace(/```$/, "").trim();
+          const parsedPlan = JSON.parse(cleanJson);
 
           for (const item of parsedPlan) {
             const recipe = allRecipes.find((r) => r.id === item.recipeId);

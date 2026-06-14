@@ -9,11 +9,46 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
     const userId = (session.user as any).id;
-    const { messages } = await req.json();
+    const { messages, sessionId } = await req.json();
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: "Messages array required" }, { status: 400 });
     }
+
+    // Helper to save messages to DB if a valid sessionId exists
+    const saveMessageToDb = async (role: "user" | "assistant", content: string) => {
+      if (!sessionId || sessionId.startsWith("session-")) return;
+      try {
+        const dbSession = await prisma.chatSession.findUnique({ where: { id: sessionId } });
+        if (dbSession) {
+          await prisma.chatMessage.create({
+            data: {
+              sessionId,
+              role,
+              content,
+            },
+          });
+          
+          // Update title if it's default and it's a user message
+          if (role === "user" && dbSession.title === "New AI Coaching Session") {
+            const summaryTitle = content.length > 30 
+              ? content.substring(0, 27) + "..." 
+              : content;
+            await prisma.chatSession.update({
+              where: { id: sessionId },
+              data: { title: summaryTitle, updatedAt: new Date() },
+            });
+          } else {
+            await prisma.chatSession.update({
+              where: { id: sessionId },
+              data: { updatedAt: new Date() },
+            });
+          }
+        }
+      } catch (err) {
+        console.error("Error saving message to DB:", err);
+      }
+    };
 
     // 1. Fetch user data for the system prompt context
     const user = await prisma.user.findUnique({ where: { id: userId } });
@@ -66,6 +101,11 @@ export async function POST(req: Request) {
     const apiKey = process.env.GEMINI_API_KEY;
     const isApiKeyPlaceholder = !apiKey || apiKey.startsWith("gemini-placeholder") || (!apiKey.startsWith("AIzaSy") && !apiKey.startsWith("AQ."));
 
+    // Save the incoming user message to the DB first
+    if (messages.length > 0) {
+      await saveMessageToDb("user", messages[messages.length - 1].content);
+    }
+
     if (isApiKeyPlaceholder) {
       // ── SMART MOCK COACH RESPONSE FALLBACK ──
       // Delay slightly for realism
@@ -81,13 +121,17 @@ export async function POST(req: Request) {
       } else if (lastUserMessage.includes("snack") || lastUserMessage.includes("protein")) {
         reply = `To hit your ${proteinTarget}g protein goal, try snacking on Greek yogurt with chia seeds, a handful of almonds, or a couple of hard-boiled eggs. These options provide clean protein with healthy fats! 🥩`;
       } else {
-        reply = `Hi ${name}! Looking at your logs, you've hit ${calPct}% of your daily calorie target. Let me know if you want meal suggestions, high-protein snack ideas, or tips to hit your weekly targets! 🌿`;
+        // Dynamic smart response fallback based on user input
+        reply = `Hi ${name}! I see you're asking about "${lastUserMessage}". Looking at your logs today, you've hit ${calPct}% of your calorie goal (${Math.round(totalCalories)} kcal). Let me know how I can guide you on macros or meals! 🌿`;
       }
+
+      // Save assistant reply
+      await saveMessageToDb("assistant", reply);
 
       return NextResponse.json({ reply });
     }
 
-    // ── CALL GOOGLE GEMINI API ──
+    // ── CALL GOOGLE GEMINI API (Gemini 2.5 Flash) ──
     const geminiMessages = messages.map((m) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: m.content }],
@@ -107,9 +151,15 @@ export async function POST(req: Request) {
 
     if (response.ok) {
       const resJson = await response.json();
-      const reply = resJson.candidates[0].content.parts[0].text.trim();
+      const reply = resJson.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "Sorry, I couldn't process that response.";
+      
+      // Save assistant reply
+      await saveMessageToDb("assistant", reply);
+
       return NextResponse.json({ reply });
     } else {
+      const errorText = await response.text();
+      console.error("Gemini API error response:", errorText);
       throw new Error("Gemini API request failed");
     }
   } catch (err) {
@@ -117,3 +167,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Failed to generate AI response" }, { status: 500 });
   }
 }
+

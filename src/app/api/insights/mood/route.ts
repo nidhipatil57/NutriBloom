@@ -44,7 +44,7 @@ export async function GET() {
       return NextResponse.json({ insights });
     }
 
-    // ── CALL GOOGLE GEMINI API ──
+    // ── CALL GOOGLE GEMINI API (Gemini 2.5 Flash) ──
     const prompt = `Analyze the correlation between this user's mood/energy levels and their nutrition.
     Nutrition Logs (past 30 days):
     ${JSON.stringify(nutritionLogs.map((n) => ({ date: n.date, calories: n.totalCalories, protein: n.totalProtein })))}
@@ -75,8 +75,9 @@ export async function GET() {
 
     if (response.ok) {
       const resJson = await response.json();
-      const text = resJson.candidates[0].content.parts[0].text.trim();
-      const insights = JSON.parse(text);
+      const text = resJson.candidates?.[0]?.content?.parts?.[0]?.text.trim() || "";
+      const cleanJson = text.replace(/^```json/, "").replace(/```$/, "").trim();
+      const insights = JSON.parse(cleanJson);
       return NextResponse.json({ insights });
     } else {
       throw new Error("Gemini API request failed");
