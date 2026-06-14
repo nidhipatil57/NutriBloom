@@ -4,7 +4,6 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("Cleaning database...");
-  // Delete in correct order to avoid foreign key constraint issues
   await prisma.recipeIngredient.deleteMany({});
   await prisma.ingredient.deleteMany({});
   await prisma.savedRecipe.deleteMany({});
@@ -23,14 +22,14 @@ async function main() {
   await prisma.insight.deleteMany({});
   await prisma.recipe.deleteMany({});
 
-  console.log("Seeding default recipes and ingredients...");
+  console.log("Seeding expanded recipes and ingredients...");
 
   const recipesData = [
     {
       title: "Avocado Toast",
-      summary: "A quick and healthy classic avocado toast topped with cherry tomatoes and microgreens.",
-      image: "https://images.unsplash.com/photo-1541532713592-79a0317b6b77?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Toast the whole grain bread. 2. Mash the avocado with lemon juice, salt, and pepper. 3. Spread on toast. 4. Top with halved cherry tomatoes and pumpkin seeds.",
+      summary: "Elevate your morning with this premium, nutrient-dense breakfast classic. Thick slices of artisanal whole grain sourdough bread are toasted to golden perfection, then spread with a rich, creamy mash of ripe Haas avocados, fresh lemon juice, sea salt, and cracked black pepper. Garnished with organic cherry tomato halves, mineral-rich pumpkin seeds, and a sprinkle of microgreens for an extra boost of vitamins. This meal offers a healthy balance of complex carbohydrates, dietary fiber, and heart-healthy monounsaturated fats.",
+      image: null,
+      instructions: "1. Toast the whole grain bread.\n2. Mash the avocado with lemon juice, salt, and pepper.\n3. Spread the avocado mash evenly on the toasted bread slices.\n4. Top with halved cherry tomatoes, pumpkin seeds, and a sprinkle of fresh microgreens.",
       servings: 1,
       readyInMinutes: 10,
       cuisines: JSON.stringify(["American"]),
@@ -52,9 +51,9 @@ async function main() {
     },
     {
       title: "Grilled Chicken Salad",
-      summary: "High protein Mediterranean style grilled chicken salad with crisp greens and lemon vinaigrette.",
-      image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Grill the chicken breast until cooked through. 2. Chop lettuce, cucumber, and tomatoes. 3. Slice the grilled chicken. 4. Toss everything with olive oil and lemon juice.",
+      summary: "A clean, high-protein Mediterranean-inspired salad designed to fuel muscle recovery and metabolic health. Features tender, herb-marinated chicken breast grilled to juicy perfection, sliced and served over a crisp bed of fresh romaine lettuce and baby spinach. Tossed with crunchy English cucumbers, vine-ripened cherry tomatoes, kalamata olives, and a light, house-made lemon herb vinaigrette. This low-carb salad is packed with essential vitamins, minerals, and lean protein, making it the perfect choice for a refreshing lunch or dinner.",
+      image: null,
+      instructions: "1. Season the chicken breast with salt, pepper, and herbs. Grill over medium-high heat for 6-7 minutes per side until cooked through.\n2. Chop the romaine lettuce, cucumber, and cherry tomatoes.\n3. Slice the grilled chicken into thin strips.\n4. In a large bowl, toss the lettuce, cucumber, tomatoes, and sliced chicken with olive oil and lemon vinaigrette.",
       servings: 1,
       readyInMinutes: 20,
       cuisines: JSON.stringify(["Mediterranean", "American"]),
@@ -76,9 +75,9 @@ async function main() {
     },
     {
       title: "Quinoa Buddha Bowl",
-      summary: "A colorful plant-based bowl filled with fluffy quinoa, roasted sweet potatoes, chickpeas, and tahini dressing.",
-      image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Cook quinoa according to package directions. 2. Roast sweet potato cubes and chickpeas in the oven. 3. Assemble bowl with spinach, quinoa, potatoes, chickpeas, and sliced avocado. 4. Drizzle with tahini dressing.",
+      summary: "A vibrant, beautifully structured plant-based power bowl filled with complex nutrients. Built on a bed of fluffy, protein-complete quinoa and fresh baby spinach, topped with caramelized roasted sweet potatoes, crispy spiced chickpeas, and half a sliced ripe avocado. Drizzled with a creamy, rich tahini lemon dressing that provides healthy fats and a savory finish. This gluten-free and vegan dish is an excellent source of dietary fiber, plant protein, and essential micronutrients for sustained, all-day energy.",
+      image: null,
+      instructions: "1. Rinse and cook quinoa in water or vegetable broth (1:2 ratio) for 15 minutes.\n2. Toss cubed sweet potatoes and chickpeas in olive oil, paprika, and cumin, and roast in the oven at 400°F for 25 minutes.\n3. Arrange fresh baby spinach, cooked quinoa, roasted potatoes, and chickpeas in sections in a serving bowl.\n4. Top with sliced avocado and drizzle with a creamy blend of tahini and lemon juice.",
       servings: 2,
       readyInMinutes: 35,
       cuisines: JSON.stringify(["Global"]),
@@ -101,9 +100,9 @@ async function main() {
     },
     {
       title: "Berry Protein Smoothie",
-      summary: "A refreshing and creamy smoothie packed with antioxidants and whey protein.",
-      image: "https://images.unsplash.com/photo-1553530666-ba11a7da3888?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Add all ingredients to a high-speed blender. 2. Blend until completely smooth. 3. Pour into a glass and enjoy.",
+      summary: "A refreshing, velvety-smooth protein shake packed with powerful antioxidants and muscle-repairing whey protein. Blended with a colorful mix of organic frozen strawberries, blueberries, and raspberries, half a potassium-rich banana, unsweetened almond milk, and a tablespoon of fiber-dense chia seeds. Perfect as a quick post-workout recovery drink or a convenient breakfast on the go. This gluten-free and vegetarian smoothie delivers clean energy, aids digestion, and keeps you full for hours.",
+      image: null,
+      instructions: "1. Add the almond milk, frozen mixed berries, banana, whey protein powder, and chia seeds into a high-speed blender.\n2. Blend on high speed for 1-2 minutes until completely smooth and creamy.\n3. Pour into a glass, garnish with a few fresh berries if desired, and serve immediately.",
       servings: 1,
       readyInMinutes: 5,
       cuisines: JSON.stringify(["American"]),
@@ -125,9 +124,9 @@ async function main() {
     },
     {
       title: "Salmon with Sweet Potato & Broccoli",
-      summary: "Rich in Omega-3 fatty acids, this clean dinner plate features baked salmon, sweet potato mash, and steamed broccoli.",
-      image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Season salmon fillet with salt, pepper, and dill, then bake at 400°F for 12-15 minutes. 2. Steam broccoli florets. 3. Boil and mash the sweet potato. 4. Serve together.",
+      summary: "A premium, clean dinner plate rich in heart-healthy Omega-3 fatty acids. A fresh wild-caught salmon fillet is seasoned with dill, garlic, and sea salt, then baked to flaky perfection. Accompanied by a smooth mash of roasted sweet potatoes and a generous serving of lightly steamed broccoli florets drizzled with cold-pressed extra virgin olive oil. This high-protein, gluten-free meal provides a perfect combination of lean proteins, slow-burning complex carbohydrates, and fiber to support cardiovascular and metabolic health.",
+      image: null,
+      instructions: "1. Season the salmon fillet with salt, black pepper, and dried dill. Bake at 400°F (200°C) for 12-15 minutes until flaky.\n2. Steam the broccoli florets for 5-6 minutes until tender-crisp.\n3. Peel, boil, and mash the sweet potato with a touch of olive oil and salt.\n4. Plate the baked salmon alongside the sweet potato mash and steamed broccoli.",
       servings: 1,
       readyInMinutes: 25,
       cuisines: JSON.stringify(["American"]),
@@ -148,9 +147,9 @@ async function main() {
     },
     {
       title: "Greek Yogurt Parfait",
-      summary: "A creamy, crunchy Greek yogurt parfait layered with fresh berries, honey, and high-protein granola.",
-      image: "https://images.unsplash.com/photo-1488477181946-6428a0291777?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Scoop Greek yogurt into a bowl or jar. 2. Top with strawberries, blueberries, and granola. 3. Drizzle with honey.",
+      summary: "A creamy, refreshing, and gut-friendly breakfast or snack option. Features thick, high-protein unsweetened Greek yogurt layered with sweet sliced strawberries, fresh wild blueberries, and a sprinkle of premium honey-almond granola for a satisfying crunch. Lightly drizzled with organic raw honey for a touch of natural sweetness. Packed with active probiotics, calcium, and protein, this vegetarian parfait is excellent for digestive health and muscle maintenance.",
+      image: null,
+      instructions: "1. In a glass or bowl, scoop half of the Greek yogurt.\n2. Add a layer of sliced strawberries and blueberries, followed by half of the granola.\n3. Spoon the remaining Greek yogurt on top, add the rest of the berries and granola.\n4. Drizzle with a tablespoon of raw honey before eating.",
       servings: 1,
       readyInMinutes: 5,
       cuisines: JSON.stringify(["Greek", "Mediterranean"]),
@@ -172,9 +171,9 @@ async function main() {
     },
     {
       title: "Tofu Vegetable Stir-Fry",
-      summary: "A savory, nutrient-dense vegan stir-fry featuring crispy tofu and a colorful mix of fresh vegetables.",
-      image: "https://images.unsplash.com/photo-1512058564366-18510be2db19?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Press tofu and cut into cubes, then pan-sear until crispy. 2. Stir-fry broccoli, bell peppers, and snap peas. 3. Add tofu back and toss with soy sauce, garlic, and ginger sauce.",
+      summary: "A savory, nutrient-dense vegan stir-fry featuring crispy pan-seared organic tofu cubes and a colorful medley of fresh, crunchy vegetables. Sautéed bell peppers, broccoli florets, and sugar snap peas are tossed in a light ginger-garlic soy sauce with a touch of toasted sesame oil. This quick, low-calorie dish is a fantastic source of plant-based protein, dietary fiber, and essential minerals, offering a clean and satisfying Asian-inspired lunch or dinner.",
+      image: null,
+      instructions: "1. Press the tofu to remove excess moisture, cut into cubes, and pan-sear in sesame oil until golden and crispy on all sides.\n2. Remove tofu and in the same pan, stir-fry chopped bell pepper, broccoli florets, and minced garlic/ginger for 5 minutes.\n3. Add the tofu back into the skillet with the vegetables.\n4. Pour in the soy sauce and toss everything together on high heat for 2 minutes before serving.",
       servings: 2,
       readyInMinutes: 20,
       cuisines: JSON.stringify(["Asian"]),
@@ -197,9 +196,9 @@ async function main() {
     },
     {
       title: "Mediterranean Chickpea Salad",
-      summary: "A bright, refreshing combination of crisp cucumbers, cherry tomatoes, olives, feta, and protein-rich chickpeas.",
-      image: "https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Drain and rinse chickpeas. 2. Chop cucumber, cherry tomatoes, and red onion. 3. Combine in a large bowl with kalamata olives and crumbled feta cheese. 4. Toss with olive oil, lemon juice, and dried oregano.",
+      summary: "A bright, zesty, and refreshing combination of Mediterranean flavors. Plump chickpeas are tossed with crisp English cucumbers, sweet cherry tomatoes, sliced red onions, kalamata olives, and crumbled authentic Greek feta cheese. Drizzled with an extra virgin olive oil and fresh lemon juice dressing, seasoned with wild dried oregano. This naturally gluten-free and vegetarian salad is rich in plant-based protein, gut-healthy fiber, and monounsaturated fats, providing long-lasting satiety.",
+      image: null,
+      instructions: "1. Drain and rinse the canned chickpeas thoroughly.\n2. Dice the cucumber, slice the cherry tomatoes in halves, and finely chop the red onion.\n3. In a large bowl, combine the chickpeas, cucumber, tomatoes, red onion, kalamata olives, and crumbled feta cheese.\n4. In a small cup, whisk olive oil, lemon juice, and dried oregano, then pour over the salad and toss well.",
       servings: 2,
       readyInMinutes: 15,
       cuisines: JSON.stringify(["Mediterranean"]),
@@ -222,9 +221,9 @@ async function main() {
     },
     {
       title: "Oatmeal with Banana & Chia",
-      summary: "Warm, comforting oats topped with sliced bananas, chia seeds, and a touch of organic maple syrup.",
-      image: "https://images.unsplash.com/photo-1517881917430-e70dfb3610aa?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Cook oats in water or plant milk on the stove until creamy. 2. Slice the banana. 3. Transfer oats to a bowl, arrange banana slices on top, and sprinkle with chia seeds and cinnamon. 4. Drizzle with maple syrup.",
+      summary: "A warm, comforting, and heart-healthy bowl of steel-cut oats cooked to a creamy texture in vanilla almond milk. Topped with sweet sliced banana, nutrient-packed black chia seeds, a dash of cinnamon, and a light drizzle of pure organic maple syrup. This classic vegan breakfast is loaded with soluble beta-glucan fiber, which helps regulate cholesterol levels, stabilize blood sugar, and provide a steady release of clean energy throughout the morning.",
+      image: null,
+      instructions: "1. Bring almond milk to a gentle boil, stir in the rolled oats, and cook on medium-low heat for 6-8 minutes until thick and creamy.\n2. Slice the banana into rounds.\n3. Pour the hot oatmeal into a serving bowl, arrange the banana slices on top.\n4. Sprinkle with chia seeds and cinnamon, and drizzle with maple syrup before serving.",
       servings: 1,
       readyInMinutes: 8,
       cuisines: JSON.stringify(["American"]),
@@ -246,9 +245,9 @@ async function main() {
     },
     {
       title: "Garlic Butter Shrimp Pasta",
-      summary: "Succulent shrimp tossed in garlic butter sauce with whole wheat spaghetti and fresh parsley.",
-      image: "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Cook whole wheat pasta according to instructions. 2. Sauté minced garlic in butter and olive oil until fragrant. 3. Add peeled shrimp and cook for 3-4 minutes until pink. 4. Toss pasta with shrimp, garlic butter, and fresh chopped parsley.",
+      summary: "A savory, high-protein pasta dish featuring succulent wild-caught shrimp pan-seared in an aromatic garlic butter and white wine sauce. Tossed with al dente whole wheat spaghetti, fresh lemon zest, and a generous handful of finely chopped flat-leaf parsley. This Italian-style dinner offers a balanced macronutrient profile, combining lean seafood protein with slow-digesting complex carbohydrates for a delicious, satisfying, and energizing dinner.",
+      image: null,
+      instructions: "1. Cook the whole wheat spaghetti in boiling salted water for 9-11 minutes until al dente. Drain and set aside.\n2. Melt butter and olive oil in a skillet, add minced garlic, and sauté for 1 minute until fragrant.\n3. Add the peeled shrimp and cook for 3-4 minutes until pink and cooked through.\n4. Add pasta, fresh lemon zest, chopped parsley, salt, and pepper into the skillet, toss together on low heat for 1 minute.",
       servings: 2,
       readyInMinutes: 20,
       cuisines: JSON.stringify(["Italian"]),
@@ -271,9 +270,9 @@ async function main() {
     },
     {
       title: "Lentil Coconut Curry",
-      summary: "A rich, creamy, and warm lentil curry simmered in coconut milk, ginger, garlic, and aromatic spices.",
-      image: "https://images.unsplash.com/photo-1545093149-618ce3bcf49d?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Sauté chopped onion, garlic, and grated ginger in a pan. 2. Stir in curry powder, turmeric, and cumin. 3. Add dry red lentils, diced tomatoes, vegetable broth, and coconut milk. 4. Simmer for 20 minutes until lentils are soft. Garnish with cilantro.",
+      summary: "A rich, velvety, and deeply aromatic lentil stew simmered in a base of creamy coconut milk, ginger, garlic, and a custom blend of warm Indian spices. Red lentils are slow-cooked with diced tomatoes and fresh spinach until tender. Garnish with fresh cilantro and a squeeze of lime juice. This nourishing, comforting vegan and gluten-free dish is exceptionally high in iron, folate, plant protein, and dietary fiber, supporting overall digestive wellness.",
+      image: null,
+      instructions: "1. Sauté chopped onion, garlic, and grated ginger in olive oil in a deep pot until soft.\n2. Add curry powder, turmeric, and cumin, stirring for 30 seconds to toast the spices.\n3. Add dry red lentils, canned diced tomatoes, vegetable broth, and coconut milk. Bring to a boil, then reduce heat and simmer covered for 20 minutes.\n4. Stir in fresh baby spinach until wilted, squeeze fresh lime juice, and garnish with fresh cilantro.",
       servings: 3,
       readyInMinutes: 30,
       cuisines: JSON.stringify(["Indian"]),
@@ -296,9 +295,9 @@ async function main() {
     },
     {
       title: "Turkey & Avocado Wrap",
-      summary: "Fresh turkey breast slices, smashed avocado, and crisp butter lettuce wrapped in a high-fiber whole wheat tortilla.",
-      image: "https://images.unsplash.com/photo-1626700051175-6518c4793f4f?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Lay the tortilla flat and spread mashed avocado across the surface. 2. Layer turkey breast slices, baby spinach, and sliced tomato. 3. Fold sides in and roll tightly. 4. Cut in half and serve.",
+      summary: "A quick, satisfying, and macro-friendly lunch wrap. Premium deli-sliced roasted turkey breast is rolled in a high-fiber whole wheat flour tortilla alongside fresh butter lettuce, sliced tomatoes, and a rich, creamy spread of mashed ripe avocado. This high-protein, low-fat wrap provides a convenient, portable meal that balances lean poultry protein with heart-healthy monounsaturated fats and dietary fiber to keep cravings at bay.",
+      image: null,
+      instructions: "1. Mash half an avocado with a pinch of salt and lime juice.\n2. Lay the whole wheat tortilla flat and spread the mashed avocado evenly across it.\n3. Layer the turkey breast slices, baby spinach, and sliced tomato on top.\n4. Fold the left and right sides of the tortilla inward, then roll up tightly from the bottom. Slice diagonally.",
       servings: 1,
       readyInMinutes: 5,
       cuisines: JSON.stringify(["American"]),
@@ -320,9 +319,9 @@ async function main() {
     },
     {
       title: "High-Protein Egg Shakshuka",
-      summary: "Classic Middle Eastern breakfast dish featuring eggs poached in a rich, spicy tomato and bell pepper sauce.",
-      image: "https://images.unsplash.com/photo-1590412200988-a436bb705300?auto=format&fit=crop&q=80&w=600",
-      instructions: "1. Sauté chopped onion, garlic, and red bell pepper in olive oil until soft. 2. Stir in crushed tomatoes, paprika, cumin, and chili flakes. Simmer for 10 minutes. 3. Make small wells in the sauce and crack eggs into them. 4. Cover and cook on low heat for 5-8 minutes until egg whites are set. Garnish with fresh parsley.",
+      summary: "A classic North African and Middle Eastern skillet dish of eggs gently poached in a rich, spiced tomato and red bell pepper sauce. Seasoned with cumin, smoked paprika, garlic, and fresh chili flakes, then finished with crumbled feta and fresh parsley. Served warm, this dish is naturally low-carb and gluten-free. It provides high-quality egg protein, healthy fats, and a wealth of antioxidants from the red pepper tomato reduction.",
+      image: null,
+      instructions: "1. Sauté chopped onion, garlic, and red bell pepper in olive oil in a large skillet until softened.\n2. Stir in cumin, smoked paprika, and canned crushed tomatoes. Simmer on low heat for 10 minutes to thicken the sauce.\n3. Use a spoon to make 4 small wells in the sauce, and crack an egg into each well.\n4. Cover the skillet and cook on low heat for 6-8 minutes until egg whites are cooked but yolks are still runny. Top with feta and parsley.",
       servings: 2,
       readyInMinutes: 20,
       cuisines: JSON.stringify(["Middle Eastern"]),
@@ -343,10 +342,59 @@ async function main() {
         { name: "Cumin", amount: 1, unit: "tsp", aisle: "Pantry" },
       ],
     },
+    {
+      title: "Paneer Butter Masala",
+      summary: "A rich, creamy, and decadent Indian classic featuring succulent paneer cubes simmered in a smooth, aromatic tomato-cashew gravy. Infused with traditional spices like garam masala, kasuri methi, and finished with a touch of fresh cream, this high-protein vegetarian dish is a staple of North Indian cuisine. Best paired with warm garlic naan or aromatic basmati rice for a complete, nourishing meal.",
+      image: null,
+      instructions: "1. Sauté chopped tomatoes, onions, garlic, ginger, and raw cashews in butter until soft. Let cool, then blend into a smooth paste.\n2. Heat butter and oil in a pan, add bay leaf, and pour in the blended gravy. Simmer on low heat for 10 minutes.\n3. Stir in Kashmiri red chili powder, garam masala, salt, and paneer cubes. Simmer for 3-4 minutes.\n4. Crush kasuri methi (dried fenugreek leaves) between your palms and sprinkle on top, stir in fresh cream, and garnish with fresh cilantro.",
+      servings: 3,
+      readyInMinutes: 25,
+      cuisines: JSON.stringify(["Indian"]),
+      diets: JSON.stringify(["Vegetarian", "High Protein", "Gluten Free"]),
+      tags: JSON.stringify(["dinner", "indian", "curry"]),
+      calories: 420,
+      protein: 18,
+      carbs: 15,
+      fat: 32,
+      fiber: 3,
+      sugar: 5,
+      ingredients: [
+        { name: "Paneer", amount: 250, unit: "grams", aisle: "Dairy" },
+        { name: "Tomatoes", amount: 4, unit: "count", aisle: "Produce" },
+        { name: "Onion", amount: 1, unit: "count", aisle: "Produce" },
+        { name: "Cashews", amount: 10, unit: "count", aisle: "Pantry" },
+        { name: "Butter", amount: 2, unit: "tbsp", aisle: "Dairy" },
+        { name: "Garam Masala", amount: 1, unit: "tsp", aisle: "Pantry" },
+      ],
+    },
+    {
+      title: "Chicken Biryani",
+      summary: "An iconic, celebratory Indian dish showcasing tender, marinated chicken pieces layered with fragrant, long-grain basmati rice. Infused with saffron, caramelized onions, fresh mint, cilantro, and a blend of rich, warm whole spices like cardamom, cloves, and star anise. This masterpiece is cooked using the traditional 'dum' method to lock in the deep, aromatic flavors and moisture, providing a balanced, protein-packed one-pot meal.",
+      image: null,
+      instructions: "1. Marinate chicken pieces in Greek yogurt, ginger-garlic paste, chili powder, turmeric, garam masala, and lemon juice for 1 hour.\n2. Wash basmati rice and parboil it in water with whole cardamom, cloves, cinnamon, and bay leaf until 70% cooked. Drain and set aside.\n3. In a heavy pot, cook marinated chicken with fried onions (birista) until half-done.\n4. Layer parboiled rice over the chicken, scatter fresh mint, cilantro, fried onions, and saffron-infused milk on top. Cover tightly and cook on low heat (dum) for 15-20 minutes.",
+      servings: 4,
+      readyInMinutes: 50,
+      cuisines: JSON.stringify(["Indian"]),
+      diets: JSON.stringify(["High Protein", "Gluten Free"]),
+      tags: JSON.stringify(["dinner", "indian", "rice"]),
+      calories: 580,
+      protein: 38,
+      carbs: 64,
+      fat: 18,
+      fiber: 4,
+      sugar: 2,
+      ingredients: [
+        { name: "Chicken", amount: 500, unit: "grams", aisle: "Meat" },
+        { name: "Basmati Rice", amount: 2, unit: "cups", aisle: "Pantry" },
+        { name: "Yogurt", amount: 0.5, unit: "cup", aisle: "Dairy" },
+        { name: "Onions", amount: 2, unit: "count", aisle: "Produce" },
+        { name: "Ginger Garlic Paste", amount: 1.5, unit: "tbsp", aisle: "Pantry" },
+        { name: "Mint Leaves", amount: 0.25, unit: "cup", aisle: "Produce" },
+      ],
+    },
   ];
 
   for (const recipe of recipesData) {
-    // 1. Create the recipe
     const createdRecipe = await prisma.recipe.create({
       data: {
         title: recipe.title,
@@ -368,16 +416,13 @@ async function main() {
       },
     });
 
-    // 2. Connect ingredients
     for (const ing of recipe.ingredients) {
-      // Find or create the ingredient
       const ingredient = await prisma.ingredient.upsert({
         where: { name: ing.name },
         update: { aisle: ing.aisle },
         create: { name: ing.name, aisle: ing.aisle },
       });
 
-      // Link it to the recipe
       await prisma.recipeIngredient.create({
         data: {
           recipeId: createdRecipe.id,

@@ -257,68 +257,48 @@ export default function RecipeDetailPage(props: PageProps) {
       </div>
 
       {/* Main Glass Layout Banner */}
-      <div className="glass-card" style={{ padding: "0px", overflow: "hidden", position: "relative" }}>
-        {/* CSS to handle responsive grid side-by-side on desktop */}
-        <style dangerouslySetInnerHTML={{__html: `
-          .banner-grid {
-            display: flex;
-            flex-direction: column;
-          }
-          @media (min-width: 768px) {
-            .banner-grid {
-              display: grid !important;
-              grid-template-columns: 1.2fr 1fr !important;
-            }
-          }
-        `}} />
-        
-        <div className="banner-grid">
-          {/* Banner Photo */}
-          <div style={{ 
-            height: "360px",
-            background: recipe.image ? `url(${recipe.image}) center/cover no-repeat` : "linear-gradient(135deg, var(--bg-elevated), var(--primary-glow))",
-            borderRight: "1px solid var(--border)",
-            position: "relative"
-          }}>
-            <div style={{ position: "absolute", top: "16px", left: "16px", display: "flex", flexWrap: "wrap", gap: "8px" }}>
+      {/* Main Glass Layout Banner */}
+      <div className="glass-card" style={{ padding: "32px", overflow: "hidden", position: "relative" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+          {/* Diets list row */}
+          {dietsList.length > 0 && (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
               {dietsList.map((diet) => (
-                <span key={diet} className="badge badge-primary" style={{ background: "rgba(16, 185, 129, 0.9)", color: "#030712", fontWeight: 700 }}>
+                <span key={diet} className="badge badge-primary" style={{ background: "rgba(16, 185, 129, 0.12)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.2)", fontWeight: 700 }}>
                   {diet}
                 </span>
               ))}
             </div>
+          )}
+
+          {/* Title & Cuisine */}
+          <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Sparkles size={16} style={{ color: "var(--primary)" }} />
+              <span style={{ fontSize: "12px", color: "var(--primary-light)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
+                {cuisinesList.join(" · ") || "Chef's Healthy Recommendation"}
+              </span>
+            </div>
+            <h2 style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.5px" }}>{recipe.title}</h2>
           </div>
 
-          {/* Banner Info */}
-          <div style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "20px", justifyContent: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <Sparkles size={16} style={{ color: "var(--primary)" }} />
-                <span style={{ fontSize: "12px", color: "var(--primary-light)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
-                  {cuisinesList.join(" · ") || "Chef's Healthy Recommendation"}
-                </span>
+          <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }} 
+             dangerouslySetInnerHTML={{ __html: recipe.summary || "This premium healthy recipe is packed with balanced macros and essential trace nutrients to support your metabolic recovery goals." }} />
+
+          {/* Quick stats strip */}
+          <div style={{ display: "flex", gap: "24px", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "16px 0", fontSize: "14px", color: "var(--text-secondary)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Clock size={18} style={{ color: "var(--text-muted)" }} />
+              <div>
+                <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Ready Time</span>
+                <strong>{recipe.readyInMinutes} Mins</strong>
               </div>
-              <h2 style={{ fontSize: "28px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.5px" }}>{recipe.title}</h2>
             </div>
-
-            <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }} 
-               dangerouslySetInnerHTML={{ __html: recipe.summary || "This premium healthy recipe is packed with balanced macros and essential trace nutrients to support your metabolic recovery goals." }} />
-
-            {/* Quick stats strip */}
-            <div style={{ display: "flex", gap: "24px", borderTop: "1px solid var(--border)", borderBottom: "1px solid var(--border)", padding: "16px 0", fontSize: "14px", color: "var(--text-secondary)" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Clock size={18} style={{ color: "var(--text-muted)" }} />
-                <div>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Ready Time</span>
-                  <strong>{recipe.readyInMinutes} Mins</strong>
-                </div>
-              </div>
-              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                <Users size={18} style={{ color: "var(--text-muted)" }} />
-                <div>
-                  <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Serving Size</span>
-                  <strong>{recipe.servings} Serving{recipe.servings > 1 ? "s" : ""}</strong>
-                </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <Users size={18} style={{ color: "var(--text-muted)" }} />
+              <div>
+                <span style={{ fontSize: "11px", color: "var(--text-muted)", display: "block" }}>Serving Size</span>
+                <strong>{recipe.servings} Serving{recipe.servings > 1 ? "s" : ""}</strong>
               </div>
             </div>
           </div>

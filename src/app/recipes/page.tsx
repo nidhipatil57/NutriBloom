@@ -374,45 +374,42 @@ export default function RecipesPage() {
                   textDecoration: "none"
                 }}
               >
-                {/* Thumbnail Block */}
-                <div style={{ 
-                  height: "180px", 
-                  width: "100%", 
-                  background: recipe.image ? `url(${recipe.image}) center/cover no-repeat` : "linear-gradient(135deg, var(--bg-elevated), var(--primary-glow))",
-                  borderBottom: "1px solid var(--border)",
-                  position: "relative"
-                }}>
-                  {/* Floating Action Buttons */}
-                  <div style={{ position: "absolute", top: "12px", right: "12px", display: "flex", gap: "8px" }}>
+                {/* Card Body */}
+                <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px", flex: 1 }}>
+                  {/* Top Tags & Heart Row */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "8px" }}>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                      <span style={{ fontSize: "11px", color: "var(--primary-light)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
+                        {JSON.parse(recipe.cuisines || "[]")[0] || "General"}
+                      </span>
+                      {JSON.parse(recipe.diets || "[]").slice(0, 1).map((diet: string) => (
+                        <span key={diet} className="badge badge-primary" style={{ background: "rgba(16, 185, 129, 0.12)", color: "#10b981", border: "1px solid rgba(16, 185, 129, 0.2)", fontSize: "10px", padding: "1px 6px" }}>
+                          {diet}
+                        </span>
+                      ))}
+                    </div>
+                    
                     <button
                       onClick={(e) => handleToggleSave(recipe.id, e)}
                       className="btn btn-icon"
                       style={{
-                        background: "rgba(10, 15, 26, 0.7)",
+                        background: "rgba(148, 163, 184, 0.05)",
                         borderColor: isSaved ? "var(--primary)" : "var(--border)",
-                        backdropFilter: "blur(4px)",
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        padding: 0,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        zIndex: 5
                       }}
                     >
-                      <Heart size={16} style={{ color: isSaved ? "var(--primary)" : "var(--text-secondary)", fill: isSaved ? "var(--primary)" : "none" }} />
+                      <Heart size={14} style={{ color: isSaved ? "var(--primary)" : "var(--text-secondary)", fill: isSaved ? "var(--primary)" : "none" }} />
                     </button>
                   </div>
 
-                  {/* Dietary Tag Badges */}
-                  <div style={{ position: "absolute", bottom: "12px", left: "12px", display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                    {JSON.parse(recipe.diets || "[]").slice(0, 2).map((diet: string) => (
-                      <span key={diet} className="badge badge-primary" style={{ background: "rgba(16, 185, 129, 0.85)", color: "#030712" }}>
-                        {diet}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Card Body */}
-                <div style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "12px", flex: 1 }}>
                   <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                    <span style={{ fontSize: "11px", color: "var(--primary-light)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "1px" }}>
-                      {JSON.parse(recipe.cuisines || "[]")[0] || "General"}
-                    </span>
                     <h3 style={{ fontSize: "16px", fontWeight: 700, lineHeight: 1.3, color: "var(--text-primary)" }}>{recipe.title}</h3>
                   </div>
 
@@ -420,7 +417,7 @@ export default function RecipesPage() {
                     fontSize: "13px", 
                     color: "var(--text-secondary)", 
                     display: "-webkit-box", 
-                    WebkitLineClamp: 2, 
+                    WebkitLineClamp: 3, 
                     WebkitBoxOrient: "vertical", 
                     overflow: "hidden", 
                     lineHeight: 1.5,
@@ -478,7 +475,7 @@ export default function RecipesPage() {
                       setLogRecipe(recipe);
                     }}
                     className="btn btn-secondary btn-sm"
-                    style={{ width: "100%", justifyContent: "center", marginTop: "4px" }}
+                    style={{ width: "100%", justifyContent: "center", marginTop: "4px", zIndex: 5 }}
                   >
                     <span>Add to Meal Log</span>
                     <ArrowRight size={12} />

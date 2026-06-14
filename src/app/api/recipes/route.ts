@@ -17,7 +17,7 @@ export async function GET(req: Request) {
     const maxCalories = Number(searchParams.get("maxCalories")) || 0;
     const minProtein = Number(searchParams.get("minProtein")) || 0;
     const page = Number(searchParams.get("page")) || 1;
-    const limit = 9;
+    const limit = 100;
     const skip = (page - 1) * limit;
 
     const apiKey = process.env.SPOONACULAR_API_KEY;
