@@ -155,12 +155,7 @@ select.input { cursor: pointer; }
 .fade-in-delay-3 { animation-delay: 0.3s; }
 
 /* ── Custom Commercial Additions ── */
-.bg-grid {
-  background-size: 50px 50px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-}
+
 
 .scanner-laser {
   position: absolute;

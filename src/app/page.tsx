@@ -204,7 +204,6 @@ export default function MarketingLandingPage() {
 
   return (
     <div 
-      className="bg-grid"
       style={{ 
         minHeight: "100vh", 
         color: "#f1f5f9", 
@@ -212,13 +211,7 @@ export default function MarketingLandingPage() {
         overflowX: "hidden",
         display: "flex",
         flexDirection: "column",
-        // Combine grid and dark premium gradient
-        backgroundImage: `
-          linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-          linear-gradient(135deg, #030712 0%, #080c16 50%, #0f172a 100%)
-        `,
-        backgroundSize: "50px 50px"
+        background: "linear-gradient(135deg, #030712 0%, #080c16 50%, #0f172a 100%)"
       }}
     >
       {/* Decorative Ambient Orbs with animations */}
@@ -281,9 +274,8 @@ export default function MarketingLandingPage() {
         </div>
 
         <nav className="hide-on-mobile" style={{ display: "flex", gap: "32px", fontSize: "14px", fontWeight: 700, color: "var(--text-secondary)" }}>
-          <a href="#features" className="hover-link" style={{ transition: "color 0.2s" }}>Modules</a>
+          <a href="#features" className="hover-link" style={{ transition: "color 0.2s" }}>Features</a>
           <a href="#calculator" className="hover-link" style={{ transition: "color 0.2s" }}>Architect</a>
-          <a href="#pricing" className="hover-link" style={{ transition: "color 0.2s" }}>Pricing</a>
           <a href="#faq" className="hover-link" style={{ transition: "color 0.2s" }}>FAQ</a>
         </nav>
 
@@ -449,158 +441,272 @@ export default function MarketingLandingPage() {
           </div>
         </section>
 
-        {/* Section 3: Interactive Goal Architect (Calculator) */}
+        {/* Section 3: Features Bento Grid */}
+        <section id="features" style={{ borderTop: "1px solid rgba(255,255,255,0.04)", background: "rgba(3, 7, 18, 0.3)", padding: "100px 24px" }}>
+          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+            
+            <div style={{ textAlign: "center", marginBottom: "56px" }}>
+              <span className="badge badge-primary" style={{ marginBottom: "12px", padding: "4px 12px" }}>CORE CAPABILITIES</span>
+              <h2 style={{ fontSize: "36px", fontWeight: 900, letterSpacing: "-1px" }}>Intelligent Health Features</h2>
+              <p style={{ color: "var(--text-secondary)", marginTop: "8px", maxWidth: "600px", margin: "8px auto 0" }}>Explore the core systems of NutriBloom OS, fully synthesized to optimize your metabolic health.</p>
+            </div>
+
+            {/* Bento Grid */}
+            <div className="bento-grid">
+              
+              {/* Card 1: Recipe Discovery Vault (Spans 2 columns) */}
+              <div className="glass-card glow-border bento-col-2" style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "24px" }}>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(16, 185, 129, 0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <ChefHat size={24} style={{ color: "var(--primary-light)" }} />
+                  </div>
+                  <div>
+                    <span className="badge badge-primary" style={{ fontSize: "9px" }}>RECIPE VAULT</span>
+                    <h3 style={{ fontSize: "20px", fontWeight: 800, marginTop: "2px" }}>Recipe Discovery Vault</h3>
+                  </div>
+                </div>
+                <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                  Search and access over 15,000 smart meals. Filter recipes dynamically based on your allergies, specific protein quotas, or low-carb targets. Each card compiles exact measurements matching your weekly grocery list autonomously.
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "auto" }}>
+                  <div style={{ display: "flex", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span style={{ fontSize: "24px" }}>🥗</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between" }}>
+                        <strong style={{ fontSize: "12px" }}>Crunchy Keto Tofu Salad</strong>
+                        <span style={{ fontSize: "11px", color: "var(--primary-light)" }}>420 kcal</span>
+                      </div>
+                      <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
+                        <span style={{ fontSize: "9px", background: "rgba(16,185,129,0.1)", color: "var(--primary-light)", padding: "2px 6px", borderRadius: "4px" }}>Low Carb</span>
+                        <span style={{ fontSize: "9px", background: "rgba(245,158,11,0.1)", color: "var(--accent-light)", padding: "2px 6px", borderRadius: "4px" }}>22g Protein</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span style={{ fontSize: "24px" }}>🍤</span>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between" }}>
+                        <strong style={{ fontSize: "12px" }}>Garlic Butter Shrimp Zoodles</strong>
+                        <span style={{ fontSize: "11px", color: "var(--primary-light)" }}>310 kcal</span>
+                      </div>
+                      <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
+                        <span style={{ fontSize: "9px", background: "rgba(6,182,212,0.1)", color: "#22d3ee", padding: "2px 6px", borderRadius: "4px" }}>Keto</span>
+                        <span style={{ fontSize: "9px", background: "rgba(245,158,11,0.1)", color: "var(--accent-light)", padding: "2px 6px", borderRadius: "4px" }}>28g Protein</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 2: Weekly Diet Planner (Spans 1 column) */}
+              <div className="glass-card glow-border" style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(245, 158, 11, 0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Calendar size={24} style={{ color: "var(--accent-light)" }} />
+                  </div>
+                  <div>
+                    <span className="badge badge-accent" style={{ fontSize: "9px" }}>PLANNER</span>
+                    <h3 style={{ fontSize: "20px", fontWeight: 800, marginTop: "2px" }}>Weekly Planner</h3>
+                  </div>
+                </div>
+                <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                  Simply assign recipes to your 7x4 schedule structure. The planner compiles overall nutritional targets and flashes warning indicators if your daily iron or magnesium goals drop too low.
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px", marginTop: "auto" }}>
+                  {["Mon", "Tue", "Wed"].map((day, dIdx) => (
+                    <div key={dIdx} style={{ background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)", textAlign: "center" }}>
+                      <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>{day}</span>
+                      <div style={{ background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.1)", borderRadius: "6px", padding: "6px", fontSize: "10px", color: "var(--primary-light)", marginTop: "8px" }}>
+                        Egg Cups
+                      </div>
+                      <div style={{ background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.1)", borderRadius: "6px", padding: "6px", fontSize: "10px", color: "var(--accent-light)", marginTop: "6px" }}>
+                        Salmon
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 3: Aisle Grocery Compiler (Spans 1 column) */}
+              <div className="glass-card glow-border" style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(6, 182, 212, 0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <ShoppingCart size={24} style={{ color: "#22d3ee" }} />
+                  </div>
+                  <div>
+                    <span className="badge" style={{ fontSize: "9px", background: "rgba(6,182,212,0.15)", color: "#22d3ee" }}>GROCERY</span>
+                    <h3 style={{ fontSize: "20px", fontWeight: 800, marginTop: "2px" }}>Aisle Compiler</h3>
+                  </div>
+                </div>
+                <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                  No more tedious shopping notes. Our compiler pools the exact ingredient requirements from your weekly plan and groups them by supermarket aisle automatically.
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "auto" }}>
+                  {[
+                    { item: "Organic Baby Spinach", category: "Produce Section" },
+                    { item: "Atlantic Salmon Fillets", category: "Seafood Counter" },
+                    { item: "Unsweetened Almond Milk", category: "Dairy/Alt" }
+                  ].map((g, gIdx) => (
+                    <div key={gIdx} style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.02)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <Check size={14} style={{ color: "var(--primary)" }} />
+                        <span style={{ fontSize: "12px", fontWeight: 600 }}>{g.item}</span>
+                      </div>
+                      <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>{g.category}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Card 4: Mood & Energy Sync (Spans 1 column) */}
+              <div className="glass-card glow-border" style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(139, 92, 246, 0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Brain size={24} style={{ color: "#a78bfa" }} />
+                  </div>
+                  <div>
+                    <span className="badge" style={{ fontSize: "9px", background: "rgba(139,92,246,0.15)", color: "#a78bfa" }}>COGNITIVE</span>
+                    <h3 style={{ fontSize: "20px", fontWeight: 800, marginTop: "2px" }}>Mood & Energy Sync</h3>
+                  </div>
+                </div>
+                <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                  Observe how your food correlates with daily focus, emotional status, and sleep stability. The system extracts patterns to highlight energy impacts.
+                </p>
+                <div style={{ background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)", marginTop: "auto" }}>
+                  <h4 style={{ fontSize: "12px", fontWeight: 700, marginBottom: "12px" }}>Focus Correlation Report</h4>
+                  <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                    <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", fontSize: "11px" }}>
+                      <span>High Protein Days</span>
+                      <span style={{ color: "var(--primary-light)", fontWeight: 700 }}>9.2 Focus Factor</span>
+                    </div>
+                    <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "100px" }}>
+                      <div style={{ height: "100%", background: "var(--primary)", width: "92%" }} />
+                    </div>
+                    <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", fontSize: "11px", marginTop: "4px" }}>
+                      <span>High Sugar Days</span>
+                      <span style={{ color: "var(--danger)", fontWeight: 700 }}>4.5 Focus Factor</span>
+                    </div>
+                    <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "100px" }}>
+                      <div style={{ height: "100%", background: "var(--danger)", width: "45%" }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Card 5: Conversational Coach (Spans 1 column) */}
+              <div className="glass-card glow-border" style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "20px" }}>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(236, 72, 153, 0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Bot size={24} style={{ color: "#f472b6" }} />
+                  </div>
+                  <div>
+                    <span className="badge" style={{ fontSize: "9px", background: "rgba(236,72,153,0.15)", color: "#f472b6" }}>AI COACH</span>
+                    <h3 style={{ fontSize: "20px", fontWeight: 800, marginTop: "2px" }}>Conversational Coach</h3>
+                  </div>
+                </div>
+                <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                  Your AI Coach is fully integrated with your databases. It evaluates breakfast photos, answers diet queries, and automatically logs meals through voice or text.
+                </p>
+                <div style={{ background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)", marginTop: "auto" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                    <Bot size={14} style={{ color: "#f472b6" }} />
+                    <strong style={{ fontSize: "11px" }}>Coach Suggestion:</strong>
+                  </div>
+                  <p style={{ fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
+                    "You've hit 80% of your fat target but only 45% of protein for today. Swap beef salad for cod or chicken to protect your caloric ceiling."
+                  </p>
+                </div>
+              </div>
+
+              {/* Card 6: AI Vision & Voice Scanner (Spans 3 columns) */}
+              <div className="glass-card glow-border bento-col-3" style={{ padding: "32px", display: "flex", flexDirection: "column", gap: "24px" }}>
+                <div style={{ display: "flex", gap: "16px", alignItems: "center" }}>
+                  <div style={{ width: "48px", height: "48px", borderRadius: "12px", background: "rgba(59, 130, 246, 0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Camera size={24} style={{ color: "#60a5fa" }} />
+                  </div>
+                  <div>
+                    <span className="badge" style={{ fontSize: "9px", background: "rgba(59,130,246,0.15)", color: "#60a5fa" }}>SCANNER</span>
+                    <h3 style={{ fontSize: "20px", fontWeight: 800, marginTop: "2px" }}>AI Vision & Voice Scanner</h3>
+                  </div>
+                </div>
+                <p style={{ fontSize: "14px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
+                  Snap a photo of your plate or dictate a quick sentence: "Logged a cup of Greek Yogurt with wild berries." The system parses ingredients, estimates calories, and updates your dashboard instantly.
+                </p>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginTop: "auto" }} className="grid-2">
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <Mic size={16} style={{ color: "#60a5fa" }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>Voice Transcription</div>
+                      <div style={{ fontSize: "11px", fontWeight: 600 }}>"A banana and 30g almonds for snack"</div>
+                    </div>
+                    <span style={{ fontSize: "9px", background: "rgba(16,185,129,0.1)", color: "var(--primary-light)", padding: "2px 6px", borderRadius: "4px" }}>Logged</span>
+                  </div>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <Camera size={16} style={{ color: "#60a5fa" }} />
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>Vision Analysis</div>
+                      <div style={{ fontSize: "11px", fontWeight: 600 }}>"Detected: Avocado Toast 🥑"</div>
+                    </div>
+                    <span style={{ fontSize: "9px", background: "rgba(16,185,129,0.1)", color: "var(--primary-light)", padding: "2px 6px", borderRadius: "4px" }}>Logged</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </section>
+
+        {/* Section 4: Metabolic Architect (Moved below features) */}
         <section id="calculator" style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px" }}>
           <div style={{ textAlign: "center", marginBottom: "48px" }}>
             <span className="badge badge-accent" style={{ marginBottom: "12px", padding: "4px 12px", background: "rgba(245,158,11,0.08)", color: "var(--accent)", border: "1px solid rgba(245,158,11,0.15)", borderRadius: "100px", fontWeight: 700 }}>METABOLIC LAB</span>
-            <h2 style={{ fontSize: "36px", fontWeight: 900, letterSpacing: "-1px", color: "#ffffff" }}>Architect Your Goals Instantly</h2>
-            <p style={{ color: "var(--text-secondary)", marginTop: "8px", maxWidth: "600px", margin: "8px auto 0" }}>Adjust the dials to witness NutriBloom OS dynamically re-architect your calorie limits and macro thresholds in real-time.</p>
+            <h2 style={{ fontSize: "36px", fontWeight: 900, letterSpacing: "-1px", color: "#ffffff" }}>Architect Your Metabolic Workspace</h2>
+            <p style={{ color: "var(--text-secondary)", marginTop: "8px", maxWidth: "600px", margin: "8px auto 0" }}>Observe how NutriBloom OS establishes clean nutritional baselines and macro thresholds to keep your health optimized.</p>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "center" }} className="grid-2">
             
-            {/* Input fields */}
+            {/* Metabolic Profile Card (No sliders) */}
             <div className="glass-card glow-border" style={{ padding: "32px", borderRadius: "var(--radius-xl)", background: "rgba(10, 15, 26, 0.6)", border: "1px solid rgba(255, 255, 255, 0.06)" }}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
-                
-                {/* Weight Selector */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", alignItems: "center" }}>
-                    <span style={{ fontSize: "14px", fontWeight: 700, color: "#ffffff" }}>Current Weight</span>
-                    <span style={{ fontSize: "16px", fontWeight: 800, color: "var(--primary-light)" }}>{weight} kg</span>
+              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", alignItems: "center" }}>
+                  <div>
+                    <h4 style={{ fontSize: "18px", fontWeight: 800, color: "#ffffff" }}>Alex Carter</h4>
+                    <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>Metabolic Profile #NB-8849</span>
                   </div>
-                  <input 
-                    type="range" 
-                    min="40" 
-                    max="150" 
-                    value={weight} 
-                    onChange={(e) => setWeight(parseInt(e.target.value))}
-                    style={{ accentColor: "var(--primary)", height: "6px", borderRadius: "100px", cursor: "pointer", background: "rgba(255, 255, 255, 0.1)" }}
-                  />
-                </div>
-
-                {/* Primary Objective */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <span style={{ fontSize: "14px", fontWeight: 700, color: "#ffffff" }}>Dietary Objective</span>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
-                    <button 
-                      onClick={() => setGoal("loss")}
-                      style={{
-                        padding: "12px 6px",
-                        background: goal === "loss" ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                        borderColor: goal === "loss" ? "var(--primary)" : "rgba(255, 255, 255, 0.06)",
-                        color: goal === "loss" ? "var(--primary-light)" : "var(--text-secondary)",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: "10px",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      Weight Loss
-                    </button>
-                    <button 
-                      onClick={() => setGoal("maintain")}
-                      style={{
-                        padding: "12px 6px",
-                        background: goal === "maintain" ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                        borderColor: goal === "maintain" ? "var(--primary)" : "rgba(255, 255, 255, 0.06)",
-                        color: goal === "maintain" ? "var(--primary-light)" : "var(--text-secondary)",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: "10px",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      Maintenance
-                    </button>
-                    <button 
-                      onClick={() => setGoal("gain")}
-                      style={{
-                        padding: "12px 6px",
-                        background: goal === "gain" ? "rgba(16, 185, 129, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                        borderColor: goal === "gain" ? "var(--primary)" : "rgba(255, 255, 255, 0.06)",
-                        color: goal === "gain" ? "var(--primary-light)" : "var(--text-secondary)",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: "10px",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      Muscle Gain
-                    </button>
+                  <div style={{ background: "rgba(16, 185, 129, 0.1)", border: "1px solid rgba(16, 185, 129, 0.2)", color: "var(--primary-light)", padding: "4px 12px", borderRadius: "100px", fontSize: "11px", fontWeight: 700 }}>
+                    Bio-Score: 94%
                   </div>
                 </div>
-
-                {/* Activity Scale */}
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                  <span style={{ fontSize: "14px", fontWeight: 700, color: "#ffffff" }}>Physical Activity Scale</span>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
-                    <button 
-                      onClick={() => setActivity("low")}
-                      style={{
-                        padding: "12px 6px",
-                        background: activity === "low" ? "rgba(6, 182, 212, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                        borderColor: activity === "low" ? "var(--cyan)" : "rgba(255, 255, 255, 0.06)",
-                        color: activity === "low" ? "var(--cyan)" : "var(--text-secondary)",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: "10px",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      Sedentary
-                    </button>
-                    <button 
-                      onClick={() => setActivity("moderate")}
-                      style={{
-                        padding: "12px 6px",
-                        background: activity === "moderate" ? "rgba(6, 182, 212, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                        borderColor: activity === "moderate" ? "var(--cyan)" : "rgba(255, 255, 255, 0.06)",
-                        color: activity === "moderate" ? "var(--cyan)" : "var(--text-secondary)",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: "10px",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      Moderately Active
-                    </button>
-                    <button 
-                      onClick={() => setActivity("high")}
-                      style={{
-                        padding: "12px 6px",
-                        background: activity === "high" ? "rgba(6, 182, 212, 0.15)" : "rgba(255, 255, 255, 0.02)",
-                        borderColor: activity === "high" ? "var(--cyan)" : "rgba(255, 255, 255, 0.06)",
-                        color: activity === "high" ? "var(--cyan)" : "var(--text-secondary)",
-                        borderWidth: "1px",
-                        borderStyle: "solid",
-                        borderRadius: "10px",
-                        fontSize: "12px",
-                        fontWeight: 700,
-                        cursor: "pointer",
-                        transition: "all 0.2s"
-                      }}
-                    >
-                      Highly Active
-                    </button>
+                <div style={{ height: "1px", background: "rgba(255,255,255,0.06)" }} />
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Base Metabolic Rate</span>
+                    <div style={{ fontSize: "18px", fontWeight: 800, color: "#ffffff", marginTop: "4px" }}>1,740 kcal</div>
+                  </div>
+                  <div style={{ background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
+                    <span style={{ fontSize: "11px", color: "var(--text-secondary)" }}>Active Energy Exp.</span>
+                    <div style={{ fontSize: "18px", fontWeight: 800, color: "#ffffff", marginTop: "4px" }}>+680 kcal</div>
                   </div>
                 </div>
-
+                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                  <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-secondary)" }}>Current Optimization Directives:</span>
+                  <ul style={{ display: "flex", flexDirection: "column", gap: "8px", listStyle: "none", fontSize: "12px", padding: 0 }}>
+                    <li style={{ display: "flex", alignItems: "start", gap: "8px" }}>
+                      <Check size={14} style={{ color: "var(--primary)", marginTop: "2px", flexShrink: 0 }} />
+                      <span style={{ color: "var(--text-secondary)" }}>Carbohydrate tapering after 7:00 PM activated</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "start", gap: "8px" }}>
+                      <Check size={14} style={{ color: "var(--primary)", marginTop: "2px", flexShrink: 0 }} />
+                      <span style={{ color: "var(--text-secondary)" }}>Hydration pacing alert: target 3.2L for today</span>
+                    </li>
+                    <li style={{ display: "flex", alignItems: "start", gap: "8px" }}>
+                      <Check size={14} style={{ color: "var(--primary)", marginTop: "2px", flexShrink: 0 }} />
+                      <span style={{ color: "var(--text-secondary)" }}>Protein ceiling increased to 165g for lean retention</span>
+                    </li>
+                  </ul>
+                </div>
               </div>
             </div>
 
@@ -609,7 +715,7 @@ export default function MarketingLandingPage() {
               <div className="glass-card" style={{ padding: "28px", borderRadius: "var(--radius-xl)", background: "rgba(10, 15, 26, 0.7)", border: "1px solid rgba(16, 185, 129, 0.25)", boxShadow: "0 10px 30px rgba(16, 185, 129, 0.05)" }}>
                 <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Calculated Calorie Target</span>
                 <div style={{ display: "flex", alignItems: "baseline", gap: "8px", marginTop: "4px" }}>
-                  <span style={{ fontSize: "48px", fontWeight: 950, color: "#ffffff", letterSpacing: "-1.5px" }}>{calculatedCal}</span>
+                  <span style={{ fontSize: "48px", fontWeight: 950, color: "#ffffff", letterSpacing: "-1.5px" }}>1943</span>
                   <span style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-secondary)" }}>kcal/day</span>
                 </div>
                 
@@ -618,10 +724,10 @@ export default function MarketingLandingPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", fontSize: "12px", fontWeight: 700 }}>
                       <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><Apple size={14} style={{ color: "var(--primary)" }} /> Protein</span>
-                      <span>{macroSplits.protein}g ({macroSplits.protein * 4} kcal)</span>
+                      <span>165g (660 kcal)</span>
                     </div>
                     <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "10px", overflow: "hidden" }}>
-                      <div style={{ height: "100%", background: "var(--primary)", width: `${Math.min(100, (macroSplits.protein / 200) * 100)}%`, transition: "width 0.3s ease-out" }} />
+                      <div style={{ height: "100%", background: "var(--primary)", width: "82.5%" }} />
                     </div>
                   </div>
 
@@ -629,10 +735,10 @@ export default function MarketingLandingPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", fontSize: "12px", fontWeight: 700 }}>
                       <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><Flame size={14} style={{ color: "var(--accent)" }} /> Carbohydrates</span>
-                      <span>{macroSplits.carbs}g ({macroSplits.carbs * 4} kcal)</span>
+                      <span>199g (796 kcal)</span>
                     </div>
                     <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "10px", overflow: "hidden" }}>
-                      <div style={{ height: "100%", background: "var(--accent)", width: `${Math.min(100, (macroSplits.carbs / 300) * 100)}%`, transition: "width 0.3s ease-out" }} />
+                      <div style={{ height: "100%", background: "var(--accent)", width: "66.3%" }} />
                     </div>
                   </div>
 
@@ -640,10 +746,10 @@ export default function MarketingLandingPage() {
                   <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                     <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", fontSize: "12px", fontWeight: 700 }}>
                       <span style={{ display: "flex", alignItems: "center", gap: "6px" }}><Heart size={14} style={{ color: "var(--cyan)" }} /> Healthy Fats</span>
-                      <span>{macroSplits.fats}g ({macroSplits.fats * 9} kcal)</span>
+                      <span>54g (486 kcal)</span>
                     </div>
                     <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.06)", borderRadius: "10px", overflow: "hidden" }}>
-                      <div style={{ height: "100%", background: "var(--cyan)", width: `${Math.min(100, (macroSplits.fats / 100) * 100)}%`, transition: "width 0.3s ease-out" }} />
+                      <div style={{ height: "100%", background: "var(--cyan)", width: "54%" }} />
                     </div>
                   </div>
                 </div>
@@ -652,455 +758,9 @@ export default function MarketingLandingPage() {
               <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "12px 18px", background: "rgba(255, 255, 255, 0.02)", borderRadius: "12px", border: "1px solid rgba(255, 255, 255, 0.05)" }}>
                 <Bot size={20} style={{ color: "var(--primary-light)" }} />
                 <span style={{ fontSize: "12px", color: "var(--text-secondary)" }}>
-                  <strong>Metabolic Tip:</strong> Keeping protein at {macroSplits.protein}g will support metabolic thermo-burn and lean mass protection during calorie deficits.
+                  <strong>Metabolic Tip:</strong> Keeping protein at 165g will support metabolic thermo-burn and lean mass protection during calorie deficits.
                 </span>
               </div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* Section 4: Interactive Feature Showcase */}
-        <section id="features" style={{ borderTop: "1px solid rgba(255,255,255,0.04)", background: "rgba(3, 7, 18, 0.3)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px" }}>
-            
-            <div style={{ textAlign: "center", marginBottom: "56px" }}>
-              <span className="badge badge-primary" style={{ marginBottom: "12px", padding: "4px 12px" }}>CORE MODULES</span>
-              <h2 style={{ fontSize: "36px", fontWeight: 900, letterSpacing: "-1px" }}>Connected Health Modules</h2>
-              <p style={{ color: "var(--text-secondary)", marginTop: "8px", maxWidth: "600px", margin: "8px auto 0" }}>Every module is fully synthesized, feeding data into your metabolic database in real-time.</p>
-            </div>
-
-            {/* Feature Modules selectors grid */}
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px", marginBottom: "32px" }} className="grid-3">
-              {[
-                { icon: ChefHat, title: "Recipe Discovery Vault", desc: "Search compliant recipes with complete macro auditing and bookmark saving.", glow: "rgba(16, 185, 129, 0.15)", border: "var(--primary-light)" },
-                { icon: Calendar, title: "Weekly Diet Planner", desc: "Map meals to a 7x4 scheduler or let AI Autopilot recommend weekly guidelines.", glow: "rgba(245, 158, 11, 0.15)", border: "var(--accent-light)" },
-                { icon: ShoppingCart, title: "Aisle Grocery Compiler", desc: "Instantly compile ingredients from planned diets into checkout ready lists.", glow: "rgba(6, 182, 212, 0.15)", border: "#22d3ee" },
-                { icon: Brain, title: "Mood & Energy Sync", desc: "Correlate water, calories, and training outputs with daily focus graphs.", glow: "rgba(139, 92, 246, 0.15)", border: "#a78bfa" },
-                { icon: Bot, title: "Conversational Coach", desc: "Chat with a metabolic assistant auditing food selections on the go.", glow: "rgba(236, 72, 153, 0.15)", border: "#f472b6" },
-                { icon: Camera, title: "AI Vision & Voice Scanner", desc: "Point camera to log meal estimations or dictate logs via audio.", glow: "rgba(59, 130, 246, 0.15)", border: "#60a5fa" }
-              ].map((feat, idx) => {
-                const IconComponent = feat.icon;
-                const isSelected = activeFeature === idx;
-                return (
-                  <div 
-                    key={idx}
-                    onClick={() => setActiveFeature(idx)}
-                    className="glass-card glow-border"
-                    style={{
-                      padding: "24px",
-                      cursor: "pointer",
-                      background: isSelected ? "rgba(10, 15, 26, 0.75)" : "rgba(10, 15, 26, 0.3)",
-                      border: isSelected ? `1px solid ${feat.border}` : "1px solid rgba(255,255,255,0.05)",
-                      boxShadow: isSelected ? `0 10px 30px ${feat.glow}` : "none",
-                      transform: isSelected ? "translateY(-4px)" : "none",
-                      transition: "all 0.3s ease-out"
-                    }}
-                  >
-                    <div style={{ display: "flex", gap: "16px" }}>
-                      <div style={{ width: "40px", height: "40px", borderRadius: "10px", background: feat.glow, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                        <IconComponent size={20} style={{ color: feat.border }} />
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-                        <h3 style={{ fontSize: "15px", fontWeight: 700, color: isSelected ? "#ffffff" : "var(--text-primary)" }}>{feat.title}</h3>
-                        <p style={{ fontSize: "12px", color: "var(--text-secondary)", lineHeight: 1.5 }}>{feat.desc}</p>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Interactive Showcase Screen */}
-            <div className="glass-card" style={{ padding: "32px", borderRadius: "var(--radius-xl)", background: "rgba(10, 15, 26, 0.65)", border: "1px solid rgba(255,255,255,0.06)", minHeight: "240px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={activeFeature}
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  {activeFeature === 0 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "32px", alignItems: "center" }} className="grid-2">
-                      <div>
-                        <span className="badge badge-primary" style={{ marginBottom: "8px" }}>RECIPE VAULT</span>
-                        <h3 style={{ fontSize: "24px", fontWeight: 800 }}>Explore 15,000+ Smart Meals</h3>
-                        <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, marginTop: "10px" }}>
-                          Filter recipes dynamically based on your allergies, specific protein quotas, or low-carb targets. Each card compiles exact measurements matching your weekly grocery list autonomously.
-                        </p>
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                        <div style={{ display: "flex", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                          <span style={{ fontSize: "24px" }}>🥗</span>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between" }}>
-                              <strong style={{ fontSize: "12px" }}>Crunchy Keto Tofu Salad</strong>
-                              <span style={{ fontSize: "11px", color: "var(--primary-light)" }}>420 kcal</span>
-                            </div>
-                            <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
-                              <span style={{ fontSize: "9px", background: "rgba(16,185,129,0.1)", color: "var(--primary-light)", padding: "2px 6px", borderRadius: "4px" }}>Low Carb</span>
-                              <span style={{ fontSize: "9px", background: "rgba(245,158,11,0.1)", color: "var(--accent-light)", padding: "2px 6px", borderRadius: "4px" }}>22g Protein</span>
-                            </div>
-                          </div>
-                        </div>
-                        <div style={{ display: "flex", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                          <span style={{ fontSize: "24px" }}>🍤</span>
-                          <div style={{ flex: 1 }}>
-                            <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between" }}>
-                              <strong style={{ fontSize: "12px" }}>Garlic Butter Shrimp Zoodles</strong>
-                              <span style={{ fontSize: "11px", color: "var(--primary-light)" }}>310 kcal</span>
-                            </div>
-                            <div style={{ display: "flex", gap: "8px", marginTop: "4px" }}>
-                              <span style={{ fontSize: "9px", background: "rgba(6,182,212,0.1)", color: "#22d3ee", padding: "2px 6px", borderRadius: "4px" }}>Keto</span>
-                              <span style={{ fontSize: "9px", background: "rgba(245,158,11,0.1)", color: "var(--accent-light)", padding: "2px 6px", borderRadius: "4px" }}>28g Protein</span>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeFeature === 1 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "32px", alignItems: "center" }} className="grid-2">
-                      <div>
-                        <span className="badge badge-accent" style={{ marginBottom: "8px" }}>PLANNER</span>
-                        <h3 style={{ fontSize: "24px", fontWeight: 800 }}>Drag-and-Drop Auto Scheduler</h3>
-                        <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, marginTop: "10px" }}>
-                          Simply click and assign recipes to your 7x4 schedule structure. The planner compiles overall nutritional targets and flashes warning indicators if your daily iron or magnesium goals drop too low.
-                        </p>
-                      </div>
-                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
-                        {["Mon", "Tue", "Wed"].map((day, dIdx) => (
-                          <div key={dIdx} style={{ background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)", textAlign: "center" }}>
-                            <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>{day}</span>
-                            <div style={{ background: "rgba(16,185,129,0.05)", border: "1px solid rgba(16,185,129,0.1)", borderRadius: "6px", padding: "6px", fontSize: "10px", color: "var(--primary-light)", marginTop: "8px" }}>
-                              Egg Cups
-                            </div>
-                            <div style={{ background: "rgba(245,158,11,0.05)", border: "1px solid rgba(245,158,11,0.1)", borderRadius: "6px", padding: "6px", fontSize: "10px", color: "var(--accent-light)", marginTop: "6px" }}>
-                              Salmon
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {activeFeature === 2 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "32px", alignItems: "center" }} className="grid-2">
-                      <div>
-                        <span className="badge" style={{ marginBottom: "8px", background: "rgba(6,182,212,0.15)", color: "#22d3ee" }}>GROCERY</span>
-                        <h3 style={{ fontSize: "24px", fontWeight: 800 }}>Autonomous Aisle Compiler</h3>
-                        <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, marginTop: "10px" }}>
-                          No more tedious note writing. Our compiler pools the exact ingredient requirements from your weekly plan and groups them by supermarket aisle automatically.
-                        </p>
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-                        {[
-                          { item: "Organic Baby Spinach", category: "Produce Section" },
-                          { item: "Atlantic Salmon Fillets", category: "Seafood Counter" },
-                          { item: "Unsweetened Almond Milk", category: "Dairy/Alternative" }
-                        ].map((g, gIdx) => (
-                          <div key={gIdx} style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", alignItems: "center", background: "rgba(255,255,255,0.02)", padding: "10px 14px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                              <Check size={14} style={{ color: "var(--primary)" }} />
-                              <span style={{ fontSize: "12px", fontWeight: 600 }}>{g.item}</span>
-                            </div>
-                            <span style={{ fontSize: "10px", color: "var(--text-muted)" }}>{g.category}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {activeFeature === 3 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "32px", alignItems: "center" }} className="grid-2">
-                      <div>
-                        <span className="badge" style={{ marginBottom: "8px", background: "rgba(139,92,246,0.15)", color: "#a78bfa" }}>COGNITIVE</span>
-                        <h3 style={{ fontSize: "24px", fontWeight: 800 }}>Mood-Energy Bio Correlations</h3>
-                        <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, marginTop: "10px" }}>
-                          Observe how your food correlates with daily focus, emotional status, and sleep stability. The system extracts patterns (e.g. "Energy rises 20% on days with &gt;75g protein before 1 PM").
-                        </p>
-                      </div>
-                      <div style={{ background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                        <h4 style={{ fontSize: "12px", fontWeight: 700, marginBottom: "12px" }}>Focus Correlation Report</h4>
-                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                          <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", fontSize: "11px" }}>
-                            <span>High Protein Days</span>
-                            <span style={{ color: "var(--primary-light)", fontWeight: 700 }}>9.2 / 10 Focus Factor</span>
-                          </div>
-                          <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "100px" }}>
-                            <div style={{ height: "100%", background: "var(--primary)", width: "92%" }} />
-                          </div>
-                          <div style={{ display: "flex", justifySelf: "stretch", justifyContent: "space-between", fontSize: "11px", marginTop: "4px" }}>
-                            <span>High Sugar Days</span>
-                            <span style={{ color: "var(--danger)", fontWeight: 700 }}>4.5 / 10 Focus Factor</span>
-                          </div>
-                          <div style={{ width: "100%", height: "6px", background: "rgba(255,255,255,0.08)", borderRadius: "100px" }}>
-                            <div style={{ height: "100%", background: "var(--danger)", width: "45%" }} />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeFeature === 4 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "32px", alignItems: "center" }} className="grid-2">
-                      <div>
-                        <span className="badge" style={{ marginBottom: "8px", background: "rgba(236,72,153,0.15)", color: "#f472b6" }}>AI COACH</span>
-                        <h3 style={{ fontSize: "24px", fontWeight: 800 }}>Metabolic AI Partner</h3>
-                        <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, marginTop: "10px" }}>
-                          Your AI Coach is fully integrated with your databases. It evaluates breakfast photos, answers diet queries, and automatically logs meals through voice or text command prompts.
-                        </p>
-                      </div>
-                      <div style={{ background: "rgba(255,255,255,0.02)", padding: "16px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
-                          <Bot size={14} style={{ color: "#f472b6" }} />
-                          <strong style={{ fontSize: "11px" }}>Coach Suggestion:</strong>
-                        </div>
-                        <p style={{ fontSize: "11px", color: "var(--text-secondary)", lineHeight: 1.5 }}>
-                          "You've hit 80% of your fat target but only 45% of protein for today. For dinner, swap the beef salad for cod or grilled chicken breast to protect your caloric ceiling."
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {activeFeature === 5 && (
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: "32px", alignItems: "center" }} className="grid-2">
-                      <div>
-                        <span className="badge" style={{ marginBottom: "8px", background: "rgba(59,130,246,0.15)", color: "#60a5fa" }}>SCANNER</span>
-                        <h3 style={{ fontSize: "24px", fontWeight: 800 }}>Scan and Log Instantly</h3>
-                        <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, marginTop: "10px" }}>
-                          Snap a photo of your plate or dictate a quick sentence: "Logged a cup of Greek Yogurt with wild berries." The system parses ingredients, estimates calories, and updates your dashboard instantly.
-                        </p>
-                      </div>
-                      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                          <Mic size={16} style={{ color: "#60a5fa" }} />
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>Voice Transcription</div>
-                            <div style={{ fontSize: "11px", fontWeight: 600 }}>"A banana and 30g almonds for snack"</div>
-                          </div>
-                          <span style={{ fontSize: "9px", background: "rgba(16,185,129,0.1)", color: "var(--primary-light)", padding: "2px 6px", borderRadius: "4px" }}>Logged</span>
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "10px", background: "rgba(255,255,255,0.02)", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.05)" }}>
-                          <Camera size={16} style={{ color: "#60a5fa" }} />
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontSize: "10px", color: "var(--text-muted)" }}>Vision Analysis</div>
-                            <div style={{ fontSize: "11px", fontWeight: 600 }}>"Detected: Avocado Toast 🥑"</div>
-                          </div>
-                          <span style={{ fontSize: "9px", background: "rgba(16,185,129,0.1)", color: "var(--primary-light)", padding: "2px 6px", borderRadius: "4px" }}>Logged</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-          </div>
-        </section>
-
-        {/* Section 5: Pricing Plans */}
-        <section id="pricing" style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px" }}>
-          <div style={{ textAlign: "center", marginBottom: "48px" }}>
-            <span className="badge badge-accent" style={{ marginBottom: "12px", padding: "4px 12px" }}>MEMBERSHIP</span>
-            <h2 style={{ fontSize: "36px", fontWeight: 900, letterSpacing: "-1px" }}>Transparent Billing Tiers</h2>
-            <p style={{ color: "var(--text-secondary)", marginTop: "8px" }}>Unlock full metabolic autonomy with our curated tier system. No hidden fees.</p>
-
-            {/* Monthly / Yearly Toggle */}
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "12px", marginTop: "24px" }}>
-              <span style={{ fontSize: "13px", fontWeight: 700, color: !isYearly ? "var(--primary-light)" : "var(--text-secondary)" }}>Monthly</span>
-              <button 
-                onClick={() => setIsYearly(!isYearly)}
-                style={{
-                  width: "44px",
-                  height: "24px",
-                  borderRadius: "100px",
-                  background: "var(--primary)",
-                  border: "none",
-                  cursor: "pointer",
-                  position: "relative",
-                  padding: "2px",
-                  display: "flex",
-                  alignItems: "center"
-                }}
-              >
-                <div 
-                  style={{
-                    width: "20px",
-                    height: "20px",
-                    borderRadius: "50%",
-                    background: "#030712",
-                    transform: isYearly ? "translateX(20px)" : "translateX(0)",
-                    transition: "transform 0.2s"
-                  }} 
-                />
-              </button>
-              <span style={{ fontSize: "13px", fontWeight: 700, color: isYearly ? "var(--primary-light)" : "var(--text-secondary)", display: "flex", alignItems: "center", gap: "4px" }}>
-                Yearly <span style={{ fontSize: "10px", background: "rgba(16,185,129,0.15)", color: "var(--primary-light)", padding: "2px 6px", borderRadius: "100px", fontWeight: 800 }}>Save 20%</span>
-              </span>
-            </div>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1.1fr 1fr", gap: "24px", alignItems: "stretch" }} className="grid-3">
-            
-            {/* Seedling Plan (Free) */}
-            <div className="glass-card glow-border" style={{ padding: "32px", borderRadius: "var(--radius-xl)", background: "rgba(10, 15, 26, 0.45)", border: "1px solid rgba(255, 255, 255, 0.05)", display: "flex", flexDirection: "column", justifySelf: "stretch", justifyContent: "space-between" }}>
-              <div>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Seedling Tier</span>
-                <h3 style={{ fontSize: "28px", fontWeight: 900, marginTop: "8px" }}>Free</h3>
-                <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "8px" }}>Kickstart your logs with baseline calorie tracking tools.</p>
-                
-                <div style={{ height: "1px", background: "var(--border)", margin: "20px 0" }} />
-                
-                <ul style={{ display: "flex", flexDirection: "column", gap: "12px", listStyle: "none", fontSize: "13px" }}>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary)" }} />
-                    <span>Basic Recipe Search</span>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary)" }} />
-                    <span>Daily Calorie Logging</span>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary)" }} />
-                    <span>5 AI Plate Scans per day</span>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px", color: "var(--text-muted)" }}>
-                    <X size={16} />
-                    <span>No 24/7 AI Coach access</span>
-                  </li>
-                </ul>
-              </div>
-              <Link href="/signup" className="btn btn-secondary" style={{ width: "100%", justifyContent: "center", marginTop: "32px", padding: "12px" }}>
-                Get Started
-              </Link>
-            </div>
-
-            {/* Bloom Plan (Pro - Recommended) */}
-            <div className="glass-card" style={{ padding: "40px 32px 32px", borderRadius: "var(--radius-xl)", background: "rgba(10, 20, 35, 0.75)", border: "2px solid var(--primary-light)", boxShadow: "0 10px 40px var(--primary-glow)", display: "flex", flexDirection: "column", justifySelf: "stretch", justifyContent: "space-between", position: "relative" }}>
-              <div style={{ position: "absolute", top: "-14px", left: "50%", transform: "translateX(-50%)", background: "linear-gradient(135deg, var(--primary), var(--cyan))", color: "#030712", fontWeight: 800, fontSize: "10px", padding: "4px 14px", borderRadius: "100px", letterSpacing: "0.05em", textTransform: "uppercase" }}>
-                Most Popular
-              </div>
-              
-              <div>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--primary-light)", textTransform: "uppercase" }}>Bloom Tier</span>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginTop: "8px" }}>
-                  <h3 style={{ fontSize: "40px", fontWeight: 950, color: "#ffffff" }}>
-                    {isYearly ? "$7.99" : "$9.99"}
-                  </h3>
-                  <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>/ month</span>
-                </div>
-                <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "8px" }}>Our gold standard: full AI companion scan & automated planning.</p>
-                
-                <div style={{ height: "1px", background: "var(--border)", margin: "20px 0" }} />
-                
-                <ul style={{ display: "flex", flexDirection: "column", gap: "12px", listStyle: "none", fontSize: "13px" }}>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary-light)" }} />
-                    <strong>Unlimited AI Food Scanning</strong>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary-light)" }} />
-                    <strong>24/7 Conversational AI Coach</strong>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary-light)" }} />
-                    <span>Auto Weekly Diet Planner</span>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary-light)" }} />
-                    <span>Smart Grocery Compiling</span>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary-light)" }} />
-                    <span>Detailed Metabolic Wave reports</span>
-                  </li>
-                </ul>
-              </div>
-              
-              <Link href="/signup" className="btn btn-primary btn-sheen" style={{ width: "100%", justifyContent: "center", marginTop: "32px", padding: "14px", border: "1px solid var(--primary-light)", color: "#030712" }}>
-                Upgrade to Bloom
-              </Link>
-            </div>
-
-            {/* Forest Plan (Enterprise) */}
-            <div className="glass-card glow-border" style={{ padding: "32px", borderRadius: "var(--radius-xl)", background: "rgba(10, 15, 26, 0.45)", border: "1px solid rgba(255, 255, 255, 0.05)", display: "flex", flexDirection: "column", justifySelf: "stretch", justifyContent: "space-between" }}>
-              <div>
-                <span style={{ fontSize: "11px", fontWeight: 700, color: "var(--text-muted)", textTransform: "uppercase" }}>Forest Tier</span>
-                <div style={{ display: "flex", alignItems: "baseline", gap: "4px", marginTop: "8px" }}>
-                  <h3 style={{ fontSize: "28px", fontWeight: 900 }}>
-                    {isYearly ? "$23.99" : "$29.99"}
-                  </h3>
-                  <span style={{ fontSize: "13px", color: "var(--text-secondary)" }}>/ month</span>
-                </div>
-                <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "8px" }}>Collaborate with private dietitians or compile shared family plans.</p>
-                
-                <div style={{ height: "1px", background: "var(--border)", margin: "20px 0" }} />
-                
-                <ul style={{ display: "flex", flexDirection: "column", gap: "12px", listStyle: "none", fontSize: "13px" }}>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary)" }} />
-                    <span>Up to 5 Family Accounts</span>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary)" }} />
-                    <span>Export reports to Dietitians</span>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary)" }} />
-                    <span>Priority Server scan speeds</span>
-                  </li>
-                  <li style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <Check size={16} style={{ color: "var(--primary)" }} />
-                    <strong>Shared Interactive Grocery List</strong>
-                  </li>
-                </ul>
-              </div>
-              <Link href="/signup" className="btn btn-secondary" style={{ width: "100%", justifyContent: "center", marginTop: "32px", padding: "12px" }}>
-                Choose Forest
-              </Link>
-            </div>
-
-          </div>
-        </section>
-
-        {/* Section 6: Testimonials Grid */}
-        <section style={{ borderTop: "1px solid rgba(255,255,255,0.04)", background: "rgba(3, 7, 18, 0.3)" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "100px 24px" }}>
-            <div style={{ textAlign: "center", marginBottom: "56px" }}>
-              <span className="badge badge-primary" style={{ marginBottom: "12px", padding: "4px 12px" }}>TESTIMONIALS</span>
-              <h2 style={{ fontSize: "36px", fontWeight: 900, letterSpacing: "-1px" }}>Endorsed by Professionals</h2>
-              <p style={{ color: "var(--text-secondary)", marginTop: "8px" }}>See how NutriBloom is reforming tracking for members and health coaches.</p>
-            </div>
-
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "24px" }} className="grid-3">
-              {[
-                { name: "Dr. Elena Rostova", title: "Metabolic Researcher, MD", text: "NutriBloom's closed-loop structure sets it apart. The way it correlates mood variables directly with macro splits is scientifically grounding.", initial: "ER", color: "rgba(16, 185, 129, 0.1)" },
-                { name: "Marcus Thorne", title: "Certified Athletic Trainer", text: "My clients used to forget logging. With NutriBloom's dictation and AI scanner, adherence rose by 70%. It is a complete game changer for muscle recovery.", initial: "MT", color: "rgba(6, 182, 212, 0.1)" },
-                { name: "Sophia Martinez", title: "Bloom Premium Member", text: "The AI coach saved me. I simply tell it what I ate or snap a picture, and it tells me how to balance protein target ratios for dinner. Down 10kg already!", initial: "SM", color: "rgba(139, 92, 246, 0.1)" }
-              ].map((test, idx) => (
-                <div key={idx} className="glass-card glow-border" style={{ padding: "28px", borderRadius: "16px", background: "rgba(10, 15, 26, 0.45)", border: "1px solid rgba(255, 255, 255, 0.05)", display: "flex", flexDirection: "column", justifySelf: "stretch", justifyContent: "space-between" }}>
-                  <div>
-                    <div style={{ display: "flex", gap: "3px", color: "#fbbf24", marginBottom: "16px" }}>
-                      {[...Array(5)].map((_, i) => <Star key={i} size={14} fill="#fbbf24" style={{ border: "none" }} />)}
-                    </div>
-                    <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6, fontStyle: "italic" }}>
-                      "{test.text}"
-                    </p>
-                  </div>
-                  <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "24px" }}>
-                    <div style={{ width: "36px", height: "36px", borderRadius: "50%", background: test.color, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(255,255,255,0.06)", fontSize: "11px", fontWeight: 700 }}>
-                      {test.initial}
-                    </div>
-                    <div style={{ display: "flex", flexDirection: "column" }}>
-                      <span style={{ fontSize: "13px", fontWeight: 700 }}>{test.name}</span>
-                      <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{test.title}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
@@ -1109,16 +769,18 @@ export default function MarketingLandingPage() {
         <section id="faq" style={{ maxWidth: "800px", margin: "0 auto", padding: "100px 24px" }}>
           <div style={{ textAlign: "center", marginBottom: "48px" }}>
             <span className="badge badge-accent" style={{ marginBottom: "12px", padding: "4px 12px" }}>QUESTIONS</span>
-            <h2 style={{ fontSize: "36px", fontWeight: 900, letterSpacing: "-1px" }}>Frequently Answered FAQs</h2>
-            <p style={{ color: "var(--text-secondary)", marginTop: "8px" }}>Everything you need to know about the NutriBloom ecosystem.</p>
+            <h2 style={{ fontSize: "36px", fontWeight: 900, letterSpacing: "-1px" }}>Frequently Asked Questions</h2>
+            <p style={{ color: "var(--text-secondary)", marginTop: "8px" }}>Common questions regarding each of the core features within NutriBloom OS.</p>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {[
-              { q: "How does the closed-loop tracking work?", a: "Unlike standard loggers where you copy numbers blindly, NutriBloom syncs your grocery shopping cart, recipe selections, daily metabolic limits, and physical activity logs. The AI Coach audits this complete database and automatically highlights discrepancies in real-time." },
-              { q: "Is the AI scanner accurate for home-cooked meals?", a: "Yes! Our visual recognition algorithm estimates food volume and splits components down to approximate macro ratios. If you have custom ingredients, you can dictate or tell the AI Coach: 'Audit my salad: added 20g cheese and 15g walnuts' to refine details." },
-              { q: "Can I export my grocery lists?", a: "Absolutely. Once compiled, you can download your shopping lists as formatted PDFs or copy raw text to import directly into third-party delivery apps like Instacart." },
-              { q: "Can I sync with wearable trackers like Apple Health or Fitbit?", a: "Yes. NutriBloom integrates directly with active wearable devices to automatically import steps, daily calorie expenditures, and workout timings to adjust daily nutritional ceilings." }
+              { q: "What is the Recipe Discovery Vault and how does it auto-audit macros?", a: "The Recipe Discovery Vault contains over 15,000 smart meals. When you select a recipe, the system automatically correlates the macros against your metabolic targets and adjusts them if you scale the portions, making sure you stay within your daily caloric limits." },
+              { q: "How does the Weekly Diet Planner's AI Autopilot work?", a: "Our AI Autopilot designs a weekly meal plan tailored to your metabolic profile. It schedules meals across a 7x4 weekly grid, ensuring all micronutrient (like iron and magnesium) and macronutrient thresholds are perfectly balanced." },
+              { q: "Can the Aisle Grocery Compiler sync with external delivery services?", a: "Yes. The compiler pools ingredients from your scheduled plan, organizes them by supermarket aisle, and lets you export lists as clean PDFs or copy-paste text to check out instantly in local grocery apps." },
+              { q: "How does the Mood & Energy Sync correlate my focus and physical state?", a: "By tracking your hydration, sleep quality, and daily meal timings, the cognitive sync engine builds correlation reports. It highlights patterns such as how specific protein targets or sugar levels impact your Focus Factor and cognitive endurance." },
+              { q: "What can I ask the Conversational Coach?", a: "You can ask the coach to audit your meals, suggest healthy recovery snacks, adjust your daily intake based on how you feel, or even translate voice logs like 'I had an avocado toast and tea' into exact nutritional entries." },
+              { q: "Is the AI Vision & Voice Scanner capable of portion estimation?", a: "Absolutely. Simply snap a photo of your plate, and our vision engine estimates the volume and composition of the food. You can also refine the estimation by voice dictation to ensure 99.2% tracking accuracy." }
             ].map((faq, idx) => {
               const isOpen = openFaq === idx;
               return (
@@ -1206,9 +868,8 @@ export default function MarketingLandingPage() {
             {/* Product Links */}
             <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
               <h4 style={{ fontSize: "12px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "#ffffff" }}>Product</h4>
-              <a href="#features" style={{ fontSize: "12px", color: "var(--text-secondary)" }} className="hover-white">Connected Modules</a>
+              <a href="#features" style={{ fontSize: "12px", color: "var(--text-secondary)" }} className="hover-white">Core Features</a>
               <a href="#calculator" style={{ fontSize: "12px", color: "var(--text-secondary)" }} className="hover-white">Metabolic Architect</a>
-              <a href="#pricing" style={{ fontSize: "12px", color: "var(--text-secondary)" }} className="hover-white">Pricing Plans</a>
             </div>
 
             {/* Company Links */}
@@ -1246,9 +907,40 @@ export default function MarketingLandingPage() {
         .hover-white:hover {
           color: #ffffff !important;
         }
+        .bento-grid {
+          display: grid;
+          grid-template-columns: repeat(3, 1fr);
+          gap: 24px;
+        }
+        .bento-col-2 {
+          grid-column: span 2;
+        }
+        .bento-col-3 {
+          grid-column: span 3;
+        }
+        @media (max-width: 1024px) {
+          .bento-grid {
+            grid-template-columns: repeat(2, 1fr);
+          }
+          .bento-col-2 {
+            grid-column: span 2;
+          }
+          .bento-col-3 {
+            grid-column: span 2;
+          }
+        }
         @media (max-width: 768px) {
           .hide-on-mobile {
             display: none !important;
+          }
+          .bento-grid {
+            grid-template-columns: 1fr;
+          }
+          .bento-col-2 {
+            grid-column: span 1;
+          }
+          .bento-col-3 {
+            grid-column: span 1;
           }
         }
       `}</style>
