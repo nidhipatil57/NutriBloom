@@ -63,13 +63,25 @@ function LoginContent() {
     }
   };
 
-  const handleGoogleSignIn = async () => {
+  const handleDemoSignIn = async () => {
     setIsLoading(true);
     try {
-      await signIn("google", { callbackUrl: "/dashboard" });
+      const res = await signIn("credentials", {
+        email: "demo@nutribloom.com",
+        password: "demopassword",
+        redirect: false,
+      });
+
+      if (res?.error) {
+        error("Failed to sign in with demo account.");
+      } else {
+        success("Signed in successfully as Demo User!");
+        router.push("/dashboard");
+      }
     } catch (err) {
       console.error(err);
-      error("Failed to sign in with Google.");
+      error("An unexpected error occurred.");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -287,42 +299,14 @@ function LoginContent() {
             </button>
           </form>
 
-          {/* Divider */}
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "24px 0" }}>
-            <div style={{ flex: 1, height: "1px", background: "var(--border)" }} />
-            <span style={{ fontSize: "11px", color: "var(--text-muted)", textTransform: "uppercase", fontWeight: 700 }}>
-              Or Continue With
-            </span>
-            <div style={{ flex: 1, height: "1px", background: "var(--border)" }} />
-          </div>
-
-          {/* Google Button */}
+          {/* Demo Login Button */}
           <button
-            onClick={handleGoogleSignIn}
+            onClick={handleDemoSignIn}
             className="btn btn-secondary"
-            style={{ width: "100%", justifyContent: "center", gap: "10px", height: "44px" }}
+            style={{ width: "100%", justifyContent: "center", height: "44px", fontSize: "14px", marginTop: "16px", border: "1px solid var(--primary)", color: "var(--primary)" }}
             disabled={isLoading}
           >
-            {/* Google Logo SVG */}
-            <svg width="18" height="18" viewBox="0 0 24 24">
-              <path
-                fill="#4285F4"
-                d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v3.92h6.69c-.29 1.5-.1.84-2.47 2.87v2.38h3.97c2.33-2.14 3.67-5.3 3.67-8.91z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.97-2.38c-1.12.75-2.5 1.21-3.96 1.21-3.05 0-5.63-2.06-6.55-4.83H1.37v2.46C3.36 21.57 7.42 24 12 24z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.45 15.09c-.24-.72-.38-1.5-.38-2.3 0-.79.14-1.57.38-2.3V8.02H1.37C.5 9.77 0 11.83 0 14c0 2.17.5 4.23 1.37 5.98l4.08-2.89z"
-              />
-              <path
-                fill="#EA4335"
-                d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.42 0 3.36 2.43 1.37 6.02l4.08 2.89c.92-2.77 3.5-4.83 6.55-4.83z"
-              />
-            </svg>
-            <span>{isLoading ? "Connecting to Google..." : "Continue with Google"}</span>
+            <span>Demo Account Login</span>
           </button>
 
           {/* Redirect to Signup */}
